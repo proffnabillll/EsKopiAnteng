@@ -1,68 +1,25 @@
-/* GLOBAL */
-body { 
-    font-family: 'Poppins', sans-serif; 
-    background-color: #f3efea; 
-    margin: 0; 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100vh;
-}
-
-/* HEADER */
-.header-coffee { 
-    background-color: #3d1c02; 
-    border-bottom: 8px solid #2a1301; 
-    height: 90px; 
-    position: relative; 
-}
-
-.logo-large { 
-    height: 120px; 
-    width: auto; 
-    position: absolute; 
-    left: 20px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    z-index: 60; 
-}
-
-/* PRODUK CARD */
-.photo-box { aspect-ratio: 3/4; overflow: hidden; border-radius: 12px; border: 2px solid #3d1c02; }
-.photo-box img { width: 100%; height: 100%; object-fit: cover; }
-.tab-on { background-color: #3d1c02 !important; color: white !important; }
-
-/* MOBILE */
+/* --- TAMPILAN STANDAR (HP) --- */
 @media (max-width: 768px) {
-    #desktop-aside { display: none; }
-    #mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; }
+    body { overflow-y: auto !important; }
+    #desktop-aside { display: none !important; }
+    #mobile-bottom-bar { display: flex !important; position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; }
     .header-coffee { height: 70px; }
-    .logo-large { height: 60px; left: 10px; }
+    .logo-large { height: 60px; left: 10px; top: 50%; transform: translateY(-50%); }
     .header-title { font-size: 1.5rem !important; margin-left: 30px; }
-    .main-content { padding-bottom: 110px; }
+    .main-content { padding-bottom: 110px; display: block !important; } /* Pastikan main-content tidak hilang */
 }
 
-/* MODAL */
-.modal-bg { 
-    background: rgba(0,0,0,0.85); 
-    display: none; 
-    position: fixed; 
-    inset: 0; 
-    z-index: 100; 
-    align-items: center; 
-    justify-content: center; 
-}
-
-/* PRINT SETTING (YG INI JANGAN DIUBAH) */
+/* --- PRINT SETTING --- */
 @media print {
-    body * { visibility: hidden; }
-    #receipt-print, #receipt-print * { visibility: visible; }
+    /* Sembunyikan elemen web selain struk */
+    body > *:not(#receipt-print) { display: none !important; }
+    
     #receipt-print { 
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 100%; 
         display: block !important; 
+        visibility: visible !important;
+        width: 100%;
         color: black;
+        font-family: monospace;
     }
     @page { margin: 0; size: auto; }
 }
