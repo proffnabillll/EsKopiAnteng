@@ -20,7 +20,6 @@ function render(f = 'all') {
     container.innerHTML = '';
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-on'));
     document.getElementById('t-' + f).classList.add('tab-on');
-
     const list = f === 'all' ? products : products.filter(p => p.k === f);
     list.forEach(p => {
         container.innerHTML += `
@@ -35,16 +34,10 @@ function render(f = 'all') {
     });
 }
 
-function openModal(id) { 
-    activeItem = products.find(p => p.id === id); 
-    document.getElementById('m-name').innerText = activeItem.n; 
-    currentQty = 1; 
-    document.getElementById('m-qty').innerText = currentQty; 
-    document.getElementById('modal-icehot').style.display = 'flex'; 
-}
-
+function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; document.getElementById('modal-icehot').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
 function updateQty(v) { currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
+function selectType(t) { selectedType = t; }
 function confirmAdd() { cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
 
 function updateCart() {
@@ -52,61 +45,32 @@ function updateCart() {
     const listMob = document.getElementById('cart-list-mobile');
     const totalDisplays = document.querySelectorAll('.total-display');
     let total = 0;
-    const cartHTML = cart.map((item, idx) => {
-        total += item.qty * 8000;
-        return `<div class="flex justify-between items-center border-b py-2 text-xs">
-                    <span>${item.qty}x ${item.n} (${item.type})</span>
-                    <button onclick="cart.splice(${idx},1); updateCart()" class="text-red-500 font-bold">X</button>
-                </div>`;
+    const html = cart.map((i, idx) => {
+        total += i.qty * 8000;
+        return `<div class="flex justify-between text-xs py-1"><span>${i.qty}x ${i.n}</span><button onclick="cart.splice(${idx},1);updateCart()">X</button></div>`;
     }).join('');
-    listDesk.innerHTML = cartHTML || 'Kosong';
-    listMob.innerHTML = cartHTML || 'Kosong';
+    listDesk.innerHTML = html || 'Kosong';
+    listMob.innerHTML = html || 'Kosong';
     totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString()}`);
     document.getElementById('cart-count-mob').innerText = cart.length;
 }
 
 function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
+function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
+function confirmSuccess(m) { selectedMethod = m; document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'none'; document.getElementById('modal-success').style.display = 'flex'; }
 
-function confirmSuccess(method) { 
-    selectedMethod = method; 
-    document.getElementById('modal-pay').style.display = 'none'; 
-    document.getElementById('modal-success').style.display = 'flex'; 
-}
-
-// FUNGSI FINAL (PERBAIKAN STRUK KOSONG)
-function finalize(withPrint) {
-    if (withPrint) {
-        const name = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value || "PELANGGAN";
-        let totalFinal = 0;
-        
-        // ISI DATA STRUK SECARA REAL-TIME
-        document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
-        
-        const itemsHTML = cart.map(i => { 
-            const sub = i.qty * 8000; totalFinal += sub; 
-            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n}</span><span>${sub.toLocaleString()}</span></div>`; 
-        }).join('');
-        
-        document.getElementById('p-items').innerHTML = itemsHTML;
-        document.getElementById('p-total').innerHTML = `TOTAL: Rp ${totalFinal.toLocaleString()}`;
-        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + new Date().toLocaleString();
-
-        // PAKSA MUNCULKAN STRUK
+function finalize(p) {
+    if(p) {
+        const name = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value;
+        document.getElementById('p-customer').innerText = "NAMA: " + name.toUpperCase();
+        document.getElementById('p-items').innerHTML = cart.map(i => `<div>${i.qty}x ${i.n} - ${i.qty*8000}</div>`).join('');
         document.getElementById('receipt-print').style.display = 'block';
-
-        // TUNGGU 1 DETIK AGAR RENDER SELESAI BARU PRINT
-        setTimeout(() => {
-            window.print();
-            location.reload();
-        }, 1000);
-    } else {
-        location.reload();
-    }
+        setTimeout(() => { window.print(); location.reload(); }, 500);
+    } else { location.reload(); }
 }
 
-function filter(k) { render(k); }
 function openMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'flex'; }
 function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
-function selectType(t) { selectedType = t; }
+function filter(k) { render(k); }
 
 render();
