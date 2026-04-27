@@ -40,11 +40,11 @@ function updateCart() {
     const totalDisplays = document.querySelectorAll('.total-display');
     let total = 0;
     
-    // Versi Keranjang dengan Foto Produk
+    // Keranjang dengan foto kembali muncul
     const html = cart.map((i, idx) => {
         total += i.qty * 8000;
         return `
-        <div class="flex items-center gap-3 bg-white p-2 border rounded-xl shadow-sm text-xs">
+        <div class="flex items-center gap-3 bg-white p-2 border rounded-xl shadow-sm text-xs mb-2">
             <img src="${i.f}" class="w-10 h-10 rounded-lg object-cover border">
             <div class="flex-1">
                 <b class="uppercase">${i.qty}x ${i.n}</b><br>
@@ -56,7 +56,7 @@ function updateCart() {
 
     listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
     listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
-    totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
+    totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString()}`);
     document.getElementById('cart-count-mob').innerText = cart.length;
 }
 
@@ -66,7 +66,7 @@ function finalize(withPrint) {
         const name = nameInput || "PELANGGAN";
         let totalFinal = 0;
 
-        // ISI DATA STRUK SECARA PAKSA SEBELUM PRINT
+        // ISI DATA STRUK SECARA PAKSA
         document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
         
         const itemsHTML = cart.map(i => {
@@ -76,24 +76,21 @@ function finalize(withPrint) {
         }).join('');
 
         document.getElementById('p-items').innerHTML = itemsHTML;
-        document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString()}</span></div>`;
-        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + new Date().toLocaleString('id-ID');
+        document.getElementById('p-total').innerHTML = `TOTAL: Rp ${totalFinal.toLocaleString()}`;
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + new Date().toLocaleString();
 
-        // TAMPILKAN AREA STRUK
-        const receipt = document.getElementById('receipt-print');
-        receipt.style.display = 'block';
+        document.getElementById('receipt-print').style.display = 'block';
 
-        // Jeda untuk render, print, lalu reload
         setTimeout(() => {
             window.print();
             location.reload();
-        }, 800);
+        }, 1000);
     } else {
         location.reload();
     }
 }
 
-// Fungsi pendukung lainnya (tetap sama)
+// Fungsi dasar lainnya
 function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; document.getElementById('modal-icehot').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
 function updateQty(v) { currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
