@@ -70,16 +70,19 @@ body {
 @media (max-width: 768px) {
     body { overflow: auto; }
     #desktop-aside { display: none; }
-    #mobile-bottom-bar { 
-        display: flex; 
-        position: fixed; 
-        bottom: 0; 
-        left: 0; 
-        right: 0; 
-        z-index: 80; 
+    #mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; }
+    
+    /* Perbaikan Logo Mobile */
+    .header-coffee { height: 70px; } /* Header sedikit lebih pendek di mobile */
+    .logo-large { 
+        height: 60px; /* Ukuran logo dikecilkan agar pas dalam header */
+        left: 15px; 
+        top: 50%;
+        transform: translateY(-50%); 
     }
-    .header-coffee { height: 75px; }
-    .logo-large { height: 90px; left: 10px; }
+    
+    /* Geser teks judul agar tidak tertabrak logo */
+    .header-title { font-size: 1.8rem !important; margin-left: 40px; }
     .main-content { padding-bottom: 110px; }
 }
 
