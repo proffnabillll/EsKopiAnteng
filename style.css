@@ -36,7 +36,6 @@ body {
 }
 .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .btn-bounce:active { transform: scale(0.9); transition: 0.1s; }
-
 .tab-on { background-color: #3d1c02 !important; color: white !important; }
 
 /* --- KARTU PRODUK --- */
@@ -70,7 +69,6 @@ body {
 @media (max-width: 768px) {
     body { overflow: auto; }
     #desktop-aside { display: none; }
-    
     #mobile-bottom-bar { 
         display: flex; 
         position: fixed; 
@@ -79,8 +77,6 @@ body {
         right: 0; 
         z-index: 80; 
     }
-    
-    /* Perbaikan Logo Mobile */
     .header-coffee { height: 70px; }
     .logo-large { 
         height: 60px; 
@@ -89,22 +85,28 @@ body {
         transform: translateY(-50%); 
     }
     .header-title { font-size: 1.5rem !important; margin-left: 30px; }
-    
     .main-content { padding-bottom: 110px; }
 }
 
-/* --- PENGATURAN CETAK STRUK (VERSI STABIL) --- */
+/* --- PENGATURAN CETAK STRUK (FIX KOSONG & LEMBARAN) --- */
 @media print {
+    /* Sembunyikan semua kecuali struk */
     body * { visibility: hidden; }
-    #receipt-print, #receipt-print * { visibility: visible; }
+    
+    /* Pastikan container struk TERLIHAT dan PUNYA UKURAN */
+    #receipt-print, #receipt-print * { 
+        visibility: visible !important; 
+        display: block !important; 
+    }
     
     #receipt-print { 
         position: absolute; 
         left: 0; 
         top: 0; 
-        width: 58mm; 
-        display: block !important; 
-        padding: 5px; 
+        width: 58mm; /* Sesuaikan lebar kertas thermal */
+        background: white !important;
+        padding: 10px;
+        color: black !important;
     }
     
     @page { 
