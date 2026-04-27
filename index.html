@@ -54,12 +54,104 @@
         </button>
     </div>
 
-    <div id="modal-mobile-cart" class="modal-bg">...</div>
-    <div id="modal-icehot" class="modal-bg">...</div>
-    <div id="modal-pay" class="modal-bg">...</div>
-    <div id="modal-qris" class="modal-bg">...</div>
-    <div id="modal-success" class="modal-bg">...</div>
-    <div id="receipt-print">...</div>
+    <div id="modal-mobile-cart" class="modal-bg">
+        <div class="bg-white w-full max-w-sm rounded-[30px] border-4 border-[#3d1c02] flex flex-col overflow-hidden animate-pop">
+            <div class="p-4 bg-[#3d1c02] text-white flex justify-between items-center">
+                <span class="font-bold uppercase text-xs tracking-widest">Daftar Belanja</span>
+                <button onclick="closeMobileCart()" class="text-2xl">&times;</button>
+            </div>
+            <div class="p-4 bg-white border-b">
+                <input type="text" id="customer-name-mob" placeholder="NAMA PELANGGAN..." class="w-full p-3 border-2 border-[#3d1c02] rounded-xl text-sm font-bold uppercase focus:outline-none">
+            </div>
+            <div id="cart-list-mobile" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px] bg-stone-50"></div>
+            <div class="p-6 bg-white border-t-2">
+                <button onclick="closeMobileCart(); openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold btn-bounce shadow-lg uppercase">LANJUT BAYAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-icehot" class="modal-bg">
+        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[380px] text-center animate-pop">
+            <h2 id="m-name" class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Varian</h2>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button id="btn-ice" onclick="selectType('ICE')" class="bg-blue-50 border-4 border-transparent p-6 rounded-2xl btn-bounce">
+                    <span class="block text-4xl mb-2">🧊</span><span class="font-bold text-blue-700 text-xl uppercase">Ice</span>
+                </button>
+                <button id="btn-hot" onclick="selectType('HOT')" class="bg-orange-50 border-4 border-transparent p-6 rounded-2xl btn-bounce">
+                    <span class="block text-4xl mb-2">☕</span><span class="font-bold text-orange-700 text-xl uppercase">Hot</span>
+                </button>
+            </div>
+            <div class="flex items-center justify-center gap-6 mb-8 bg-stone-100 p-4 rounded-2xl">
+                <button onclick="updateQty(-1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">-</button>
+                <span id="m-qty" class="text-3xl font-black text-[#3d1c02]">1</span>
+                <button onclick="updateQty(1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">+</button>
+            </div>
+            <button onclick="confirmAdd()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce uppercase shadow-lg">Masukkan Pesanan</button>
+            <button onclick="closeModal()" class="mt-4 text-gray-400 underline text-sm uppercase font-bold">Batal</button>
+        </div>
+    </div>
+
+    <div id="modal-pay" class="modal-bg">
+        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop">
+            <h2 class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Pembayaran</h2>
+            <div class="mb-6">
+                <label class="flex items-center justify-center gap-2 mb-3 cursor-pointer">
+                    <input type="checkbox" id="enable-split" onchange="toggleSplit()" class="w-4 h-4 accent-[#3d1c02]">
+                    <span class="text-xs font-bold uppercase text-gray-600">Split Bill?</span>
+                </label>
+                <div id="split-section" style="display: none;">
+                    <div class="flex items-center justify-center gap-4 bg-stone-100 p-3 rounded-xl">
+                        <button onclick="updateSplit(-1)" class="bg-white border-2 border-[#3d1c02] text-[#3d1c02] w-8 h-8 rounded-lg font-bold btn-bounce">-</button>
+                        <span id="split-count" class="text-xl font-black w-8">1</span>
+                        <button onclick="updateSplit(1)" class="bg-white border-2 border-[#3d1c02] text-[#3d1c02] w-8 h-8 rounded-lg font-bold btn-bounce">+</button>
+                    </div>
+                    <p id="split-info" class="text-[10px] font-bold text-amber-700 mt-2 uppercase"></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="confirmSuccess('TUNAI')" class="bg-stone-50 p-6 rounded-2xl border-2 border-stone-200 font-bold btn-bounce uppercase text-sm">Tunai</button>
+                <button onclick="handleQRIS()" class="bg-stone-50 p-6 rounded-2xl border-2 border-stone-200 font-bold btn-bounce uppercase text-sm">QRIS</button>
+            </div>
+            <button onclick="document.getElementById('modal-pay').style.display='none'" class="mt-6 text-gray-400 text-sm font-bold uppercase">Kembali</button>
+        </div>
+    </div>
+
+    <div id="modal-qris" class="modal-bg">
+        <div class="bg-white p-6 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[350px] text-center animate-pop">
+            <h2 class="text-xl font-black text-[#3d1c02] mb-4 uppercase">SCAN QRIS</h2>
+            <div class="bg-white p-4 border-4 border-stone-100 rounded-2xl mb-4">
+                <img src="images/qris-code.jpg" alt="QRIS" class="w-full h-auto">
+            </div>
+            <button onclick="confirmSuccess('QRIS')" class="w-full bg-[#3d1c02] text-white py-3 rounded-xl font-bold uppercase btn-bounce">Sudah Bayar</button>
+        </div>
+    </div>
+
+    <div id="modal-success" class="modal-bg">
+        <div class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop">
+            <div class="text-6xl mb-4">✅</div>
+            <h2 class="text-2xl font-black text-[#3d1c02] mb-2 uppercase">Berhasil</h2>
+            <div class="flex flex-col gap-3">
+                <button onclick="finalize(true)" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce shadow-md uppercase">Cetak Struk</button>
+                <button onclick="finalize(false)" class="w-full bg-stone-100 text-[#3d1c02] py-4 rounded-2xl font-bold border-2 border-[#3d1c02] btn-bounce uppercase text-sm">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receipt-print" style="font-family: monospace; color: black;">
+        <center>
+            <h3 style="margin:0">ES KOPI ANTENG</h3>
+            <p style="margin:0; font-size:10px">Jl. Merpati IV No.22, Menteng Dalam</p>
+            <p>-------------------------------</p>
+            <p id="p-customer" style="font-weight:bold; text-transform:uppercase; margin:5px 0"></p>
+            <p>-------------------------------</p>
+        </center>
+        <div id="p-items" style="margin: 10px 0; font-size:11px"></div>
+        <p>-------------------------------</p>
+        <div id="p-total" style="font-weight:bold; font-size:12px"></div>
+        <div id="p-split" style="font-size:10px; margin: 5px 0; font-style: italic;"></div>
+        <p id="p-method" style="font-size:10px; margin-top:5px"></p>
+        <center style="margin-top:15px; font-size:10px"><p>TERIMA KASIH!</p></center>
+    </div>
 
     <script src="script.js"></script>
 </body>
