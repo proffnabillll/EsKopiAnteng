@@ -63,23 +63,6 @@ function render(f = 'all') {
     });
 }
 
-function openModal(id) { 
-    activeItem = products.find(p => p.id === id); 
-    document.getElementById('m-name').innerText = activeItem.n; 
-    currentQty = 1; document.getElementById('m-qty').innerText = currentQty; 
-    selectedType = "ICE"; document.getElementById('modal-icehot').style.display = 'flex'; 
-}
-
-function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
-function selectType(t) { playSound('click'); selectedType = t; }
-function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
-
-function confirmAdd() { 
-    playSound('ding'); 
-    cart.push({ ...activeItem, type: selectedType, qty: currentQty }); 
-    closeModal(); updateCart(); 
-}
-
 function updateCart() {
     const listDesk = document.getElementById('cart-list-desktop');
     const listMob = document.getElementById('cart-list-mobile');
@@ -123,7 +106,9 @@ function finalize(withPrint) {
         document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString('id-ID')}</span></div>`;
 
         const skrg = new Date();
-        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + skrg.toLocaleDateString('id-ID') + " " + skrg.getHours().toString().padStart(2,'0') + ":" + skrg.getMinutes().toString().padStart(2,'0');
+        const jam = skrg.getHours().toString().padStart(2, '0');
+        const menit = skrg.getMinutes().toString().padStart(2, '0');
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + skrg.toLocaleDateString('id-ID') + " " + jam + ":" + menit;
 
         const receipt = document.getElementById('receipt-print');
         receipt.style.display = 'block';
@@ -135,6 +120,11 @@ function finalize(withPrint) {
     } else { location.reload(); }
 }
 
+function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; selectedType = "ICE"; document.getElementById('modal-icehot').style.display = 'flex'; }
+function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
+function selectType(t) { playSound('click'); selectedType = t; }
+function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
+function confirmAdd() { playSound('ding'); cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
 function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
 function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
 function confirmSuccess(m) { playSound('success'); selectedMethod = m; document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'none'; document.getElementById('modal-success').style.display = 'flex'; }
