@@ -1,4 +1,4 @@
-/* Gaya Global */
+/* --- GLOBAL STYLE --- */
 body { 
     font-family: 'Poppins', sans-serif; 
     background-color: #f3efea; 
@@ -6,9 +6,10 @@ body {
     display: flex; 
     flex-direction: column; 
     min-height: 100vh; 
+    margin: 0;
 }
 
-/* Header & Logo */
+/* --- HEADER & LOGO --- */
 .header-coffee { 
     background-color: #3d1c02; 
     border-bottom: 8px solid #2a1301; 
@@ -28,27 +29,16 @@ body {
     filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)); 
 }
 
-/* Animasi */
+/* --- ANIMASI & TOMBOL --- */
 @keyframes popIn { 
     from { opacity: 0; transform: scale(0.9); } 
     to { opacity: 1; transform: scale(1); } 
 }
+.animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.btn-bounce:active { transform: scale(0.9); transition: 0.1s; }
+.tab-on { background-color: #3d1c02 !important; color: white !important; }
 
-.animate-pop { 
-    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
-}
-
-.btn-bounce:active { 
-    transform: scale(0.9); 
-    transition: 0.1s; 
-}
-
-.tab-on { 
-    background-color: #3d1c02 !important; 
-    color: white !important; 
-}
-
-/* Kartu Produk */
+/* --- KARTU PRODUK --- */
 .photo-box { 
     aspect-ratio: 3/4; 
     overflow: hidden; 
@@ -56,46 +46,13 @@ body {
     border: 2px solid #3d1c02; 
     background: #eee; 
 }
+.photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-.photo-box img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-}
+/* --- SIDEBAR ASIDE --- */
+#desktop-aside { display: flex; }
+#mobile-bottom-bar { display: none; }
 
-#desktop-aside { 
-    display: flex; 
-}
-
-#mobile-bottom-bar { 
-    display: none; 
-}
-
-/* Gaya Mobile (Max 768px) */
-@media (max-width: 768px) {
-    body { overflow: auto; }
-    #desktop-aside { display: none; }
-    #mobile-bottom-bar { 
-        display: flex; 
-        position: fixed; 
-        bottom: 0; 
-        left: 0; 
-        right: 0; 
-        z-index: 80; 
-    }
-    
-    .header-coffee { height: 70px; }
-    .logo-large { 
-        height: 60px; 
-        left: 10px; 
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    .header-title { font-size: 1.5rem !important; margin-left: 30px; }
-    .main-content { padding-bottom: 110px; }
-}
-
-/* Overlay Modal */
+/* --- OVERLAY MODAL --- */
 .modal-bg { 
     background: rgba(0,0,0,0.85); 
     backdrop-filter: blur(5px); 
@@ -108,17 +65,64 @@ body {
     padding: 20px; 
 }
 
-/* Aturan Cetak Struk */
+/* --- TAMPILAN MOBILE (HP) --- */
+@media (max-width: 768px) {
+    body { overflow: auto; }
+    #desktop-aside { display: none; }
+    
+    /* Bar Bagian Bawah Mobile */
+    #mobile-bottom-bar { 
+        display: flex; 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        z-index: 80; 
+    }
+    
+    /* Perbaikan Logo Agar Tidak Menutup Judul */
+    .header-coffee { height: 70px; }
+    .logo-large { 
+        height: 60px; /* Ukuran pas untuk header HP */
+        left: 10px; 
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .header-title { font-size: 1.5rem !important; margin-left: 35px; }
+    
+    .main-content { padding-bottom: 110px; }
+}
+
+/* --- SETTING CETAK STRUK --- */
 @media print {
+    /* Sembunyikan elemen web yang tidak perlu dicetak */
     body * { visibility: hidden; }
+    
+    /* Munculkan elemen struk */
     #receipt-print, #receipt-print * { visibility: visible; }
+    
     #receipt-print { 
         position: absolute; 
         left: 0; 
         top: 0; 
-        width: 58mm; 
+        width: 100%;
         display: block !important; 
         padding: 5px; 
+        color: black;
+        font-size: 12px;
     }
-    @page { margin: 0; size: auto; }
+
+    /* Paksa browser untuk tidak menambah halaman baru/sisa ruang */
+    @page { 
+        margin: 0; 
+        size: auto; 
+    }
+    
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
+    }
 }
+
+/* Sembunyikan struk di layar biasa */
+#receipt-print { display: none; }
