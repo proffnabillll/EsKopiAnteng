@@ -1,30 +1,22 @@
-// 1. Audio Context Global
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 async function playSound(t) {
-    // Pastikan AudioContext aktif
-    if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-    }
-
-    const o = audioCtx.createOscillator(); 
-    const g = audioCtx.createGain();
-    o.connect(g); 
-    g.connect(audioCtx.destination);
-
-    if(t === 'click'){ 
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    if(t==='click'){ 
         o.frequency.setValueAtTime(400, audioCtx.currentTime); 
         g.gain.setValueAtTime(0.1, audioCtx.currentTime); 
         g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); 
         o.start(); o.stop(audioCtx.currentTime + 0.1); 
     }
-    else if(t === 'ding'){ 
+    else if(t==='ding'){ 
         o.frequency.setValueAtTime(600, audioCtx.currentTime); 
         g.gain.setValueAtTime(0.1, audioCtx.currentTime); 
         g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2); 
         o.start(); o.stop(audioCtx.currentTime + 0.2); 
     }
-    else if(t === 'success'){ 
+    else if(t==='success'){ 
         o.frequency.setValueAtTime(523, audioCtx.currentTime); 
         g.gain.setValueAtTime(0.1, audioCtx.currentTime); 
         g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); 
@@ -51,21 +43,18 @@ let selectedMethod = "";
 
 function render(f = 'all') {
     const container = document.getElementById('grid-container');
-    if(!container) return; // Mencegah error jika elemen tidak ditemukan
-    
+    if(!container) return;
     container.innerHTML = '';
-    
-    // Reset tombol filter
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-on'));
-    const btn = document.getElementById('t-' + f);
-    if(btn) btn.classList.add('tab-on');
+    const activeBtn = document.getElementById('t-' + f);
+    if(activeBtn) activeBtn.classList.add('tab-on');
 
     const list = f === 'all' ? products : products.filter(p => p.k === f);
     list.forEach((p, idx) => {
         container.innerHTML += `
             <div class="bg-white p-3 rounded-2xl border-2 border-[#3d1c02] shadow-sm flex flex-col animate-pop relative" style="animation-delay: ${idx*0.05}s">
                 <div class="photo-box cursor-pointer" onclick="openModal(${p.id})">
-                    <img src="${p.f}" onerror="this.src='https://via.placeholder.com/300x400?text=ANTENG'">
+                    <img src="${p.f}">
                 </div>
                 <h3 class="font-bold text-xs mt-2 uppercase truncate text-center">${p.n}</h3>
                 <div class="flex justify-between items-center mt-auto pt-2 min-h-[40px]">
@@ -79,25 +68,15 @@ function render(f = 'all') {
 function openModal(id) { 
     activeItem = products.find(p => p.id === id); 
     document.getElementById('m-name').innerText = activeItem.n; 
-    currentQty = 1; document.getElementById('m-qty').innerText = currentQty; 
+    currentQty = 1; 
+    document.getElementById('m-qty').innerText = currentQty; 
     selectedType = "ICE";
     document.getElementById('modal-icehot').style.display = 'flex'; 
 }
 
 function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
-
-function selectType(t) { 
-    playSound('click'); 
-    selectedType = t; 
-    document.getElementById('btn-ice').style.borderColor = t === 'ICE' ? '#3d1c02' : 'transparent';
-    document.getElementById('btn-hot').style.borderColor = t === 'HOT' ? '#3d1c02' : 'transparent';
-}
-
-function updateQty(v) { 
-    playSound('click'); 
-    currentQty = Math.max(1, currentQty + v); 
-    document.getElementById('m-qty').innerText = currentQty; 
-}
+function selectType(t) { playSound('click'); selectedType = t; }
+function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
 
 function confirmAdd() { 
     playSound('ding'); 
@@ -110,10 +89,14 @@ function updateCart() {
     const listDesk = document.getElementById('cart-list-desktop');
     const listMob = document.getElementById('cart-list-mobile');
     const totalDisplays = document.querySelectorAll('.total-display');
-    let total = 0;
+    const cartCountMob = document.getElementById('cart-count-mob');
     
+    let total = 0;
+    let itemCount = 0;
+
     const html = cart.map((i, idx) => {
         total += i.qty * 8000;
+        itemCount += i.qty; // Menghitung total seluruh qty item
         return `
         <div class="flex items-center gap-3 bg-white p-2 border rounded-xl shadow-sm text-xs mb-2">
             <img src="${i.f}" class="w-10 h-10 rounded-lg object-cover border">
@@ -127,7 +110,13 @@ function updateCart() {
 
     if(listDesk) listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
     if(listMob) listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
+    
     totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
+    
+    // KUNCI: Memperbarui angka di tombol keranjang mobile
+    if(cartCountMob) {
+        cartCountMob.innerText = itemCount; 
+    }
 }
 
 function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
@@ -136,8 +125,21 @@ function confirmSuccess(m) { playSound('success'); selectedMethod = m; document.
 
 function finalize(p) {
     if(p) {
-        window.print();
-        setTimeout(() => location.reload(), 500);
+        // Logika pengisian struk sebelum print
+        const name = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value || "PELANGGAN";
+        document.getElementById('p-customer').innerText = "NAMA: " + name.toUpperCase();
+        
+        let totalFinal = 0;
+        document.getElementById('p-items').innerHTML = cart.map(i => {
+            totalFinal += i.qty * 8000;
+            return `<div>${i.qty}x ${i.n} - ${(i.qty*8000).toLocaleString()}</div>`;
+        }).join('');
+        
+        document.getElementById('p-total').innerText = "TOTAL: Rp " + totalFinal.toLocaleString();
+        document.getElementById('p-method').innerText = "METODE: " + selectedMethod;
+        
+        document.getElementById('receipt-print').style.display = 'block';
+        setTimeout(() => { window.print(); location.reload(); }, 500);
     } else {
         location.reload();
     }
@@ -147,5 +149,4 @@ function openMobileCart() { document.getElementById('modal-mobile-cart').style.d
 function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
 function filter(k) { render(k); }
 
-// Jalankan render awal
 render();
