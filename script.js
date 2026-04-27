@@ -46,19 +46,17 @@ function render(f = 'all') {
     if(!container) return;
     container.innerHTML = '';
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-on'));
-    const activeBtn = document.getElementById('t-' + f);
-    if(activeBtn) activeBtn.classList.add('tab-on');
+    const btn = document.getElementById('t-' + f);
+    if(btn) btn.classList.add('tab-on');
 
     const list = f === 'all' ? products : products.filter(p => p.k === f);
     list.forEach((p, idx) => {
         container.innerHTML += `
             <div class="bg-white p-3 rounded-2xl border-2 border-[#3d1c02] shadow-sm flex flex-col animate-pop relative" style="animation-delay: ${idx*0.05}s">
-                <div class="photo-box cursor-pointer" onclick="openModal(${p.id})">
-                    <img src="${p.f}">
-                </div>
+                <div class="photo-box cursor-pointer" onclick="openModal(${p.id})"><img src="${p.f}"></div>
                 <h3 class="font-bold text-xs mt-2 uppercase truncate text-center">${p.n}</h3>
                 <div class="flex justify-between items-center mt-auto pt-2 min-h-[40px]">
-                    <span class="text-amber-700 font-black text-sm text-left">8K</span>
+                    <span class="text-amber-700 font-black text-sm">8K</span>
                     <button onclick="playSound('click'); openModal(${p.id})" class="bg-[#3d1c02] text-white w-9 h-9 rounded-xl font-bold btn-bounce text-xl">+</button>
                 </div>
             </div>`;
@@ -68,10 +66,8 @@ function render(f = 'all') {
 function openModal(id) { 
     activeItem = products.find(p => p.id === id); 
     document.getElementById('m-name').innerText = activeItem.n; 
-    currentQty = 1; 
-    document.getElementById('m-qty').innerText = currentQty; 
-    selectedType = "ICE";
-    document.getElementById('modal-icehot').style.display = 'flex'; 
+    currentQty = 1; document.getElementById('m-qty').innerText = currentQty; 
+    selectedType = "ICE"; document.getElementById('modal-icehot').style.display = 'flex'; 
 }
 
 function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
@@ -81,8 +77,7 @@ function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty 
 function confirmAdd() { 
     playSound('ding'); 
     cart.push({ ...activeItem, type: selectedType, qty: currentQty }); 
-    closeModal(); 
-    updateCart(); 
+    closeModal(); updateCart(); 
 }
 
 function updateCart() {
@@ -90,61 +85,59 @@ function updateCart() {
     const listMob = document.getElementById('cart-list-mobile');
     const totalDisplays = document.querySelectorAll('.total-display');
     const cartCountMob = document.getElementById('cart-count-mob');
-    
-    let total = 0;
-    let itemCount = 0;
+    let total = 0; let itemCount = 0;
 
     const html = cart.map((i, idx) => {
-        total += i.qty * 8000;
-        itemCount += i.qty; // Menghitung total seluruh qty item
+        total += i.qty * 8000; itemCount += i.qty;
         return `
         <div class="flex items-center gap-3 bg-white p-2 border rounded-xl shadow-sm text-xs mb-2">
             <img src="${i.f}" class="w-10 h-10 rounded-lg object-cover border">
-            <div class="flex-1">
-                <b class="uppercase">${i.qty}x ${i.n}</b><br>
-                <small class="text-gray-400">${i.type}</small>
+            <div class="flex-1 text-left">
+                <b class="uppercase">${i.qty}x ${i.n}</b><br><small class="text-gray-400 uppercase">${i.type}</small>
             </div>
             <button onclick="cart.splice(${idx},1);updateCart()" class="text-red-500 font-bold px-2">X</button>
         </div>`;
     }).join('');
 
-    if(listDesk) listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
-    if(listMob) listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
-    
+    if(listDesk) listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic text-xs">Kosong</p>';
+    if(listMob) listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic text-xs">Kosong</p>';
     totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
-    
-    // KUNCI: Memperbarui angka di tombol keranjang mobile
-    if(cartCountMob) {
-        cartCountMob.innerText = itemCount; 
-    }
+    if(cartCountMob) cartCountMob.innerText = itemCount;
+}
+
+function finalize(withPrint) {
+    if (withPrint) {
+        const isMobile = window.innerWidth <= 768;
+        const nameInput = isMobile ? document.getElementById('customer-name-mob') : document.getElementById('customer-name');
+        const name = nameInput ? nameInput.value : "PELANGGAN";
+        let totalFinal = 0;
+
+        document.getElementById('p-customer').innerText = "PELANGGAN: " + (name.trim() || "UMUM").toUpperCase();
+        
+        const itemsHTML = cart.map(i => { 
+            const sub = i.qty * 8000; totalFinal += sub; 
+            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n} (${i.type})</span><span>${sub.toLocaleString('id-ID')}</span></div>`; 
+        }).join('');
+        document.getElementById('p-items').innerHTML = itemsHTML;
+
+        document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString('id-ID')}</span></div>`;
+
+        const skrg = new Date();
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + skrg.toLocaleDateString('id-ID') + " " + skrg.getHours().toString().padStart(2,'0') + ":" + skrg.getMinutes().toString().padStart(2,'0');
+
+        const receipt = document.getElementById('receipt-print');
+        receipt.style.display = 'block';
+
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => { receipt.style.display = 'none'; location.reload(); }, 500);
+        }, 800); 
+    } else { location.reload(); }
 }
 
 function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
 function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
 function confirmSuccess(m) { playSound('success'); selectedMethod = m; document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'none'; document.getElementById('modal-success').style.display = 'flex'; }
-
-function finalize(p) {
-    if(p) {
-        // Logika pengisian struk sebelum print
-        const name = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value || "PELANGGAN";
-        document.getElementById('p-customer').innerText = "NAMA: " + name.toUpperCase();
-        
-        let totalFinal = 0;
-        document.getElementById('p-items').innerHTML = cart.map(i => {
-            totalFinal += i.qty * 8000;
-            return `<div>${i.qty}x ${i.n} - ${(i.qty*8000).toLocaleString()}</div>`;
-        }).join('');
-        
-        document.getElementById('p-total').innerText = "TOTAL: Rp " + totalFinal.toLocaleString();
-        document.getElementById('p-method').innerText = "METODE: " + selectedMethod;
-        
-        document.getElementById('receipt-print').style.display = 'block';
-        setTimeout(() => { window.print(); location.reload(); }, 500);
-    } else {
-        location.reload();
-    }
-}
-
 function openMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'flex'; }
 function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
 function filter(k) { render(k); }
