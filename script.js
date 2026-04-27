@@ -34,41 +34,74 @@ function render(f = 'all') {
     });
 }
 
-function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; document.getElementById('modal-icehot').style.display = 'flex'; }
-function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
-function updateQty(v) { currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
-function selectType(t) { selectedType = t; }
-function confirmAdd() { cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
-
 function updateCart() {
     const listDesk = document.getElementById('cart-list-desktop');
     const listMob = document.getElementById('cart-list-mobile');
     const totalDisplays = document.querySelectorAll('.total-display');
     let total = 0;
+    
+    // Versi Keranjang dengan Foto Produk
     const html = cart.map((i, idx) => {
         total += i.qty * 8000;
-        return `<div class="flex justify-between text-xs py-1"><span>${i.qty}x ${i.n}</span><button onclick="cart.splice(${idx},1);updateCart()">X</button></div>`;
+        return `
+        <div class="flex items-center gap-3 bg-white p-2 border rounded-xl shadow-sm text-xs">
+            <img src="${i.f}" class="w-10 h-10 rounded-lg object-cover border">
+            <div class="flex-1">
+                <b class="uppercase">${i.qty}x ${i.n}</b><br>
+                <small class="text-gray-400">${i.type}</small>
+            </div>
+            <button onclick="cart.splice(${idx},1);updateCart()" class="text-red-500 font-bold px-2">X</button>
+        </div>`;
     }).join('');
-    listDesk.innerHTML = html || 'Kosong';
-    listMob.innerHTML = html || 'Kosong';
-    totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString()}`);
+
+    listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
+    listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
+    totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
     document.getElementById('cart-count-mob').innerText = cart.length;
 }
 
+function finalize(withPrint) {
+    if(withPrint) {
+        const nameInput = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value;
+        const name = nameInput || "PELANGGAN";
+        let totalFinal = 0;
+
+        // ISI DATA STRUK SECARA PAKSA SEBELUM PRINT
+        document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
+        
+        const itemsHTML = cart.map(i => {
+            const sub = i.qty * 8000;
+            totalFinal += sub;
+            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n} (${i.type})</span><span>${sub.toLocaleString()}</span></div>`;
+        }).join('');
+
+        document.getElementById('p-items').innerHTML = itemsHTML;
+        document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString()}</span></div>`;
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + new Date().toLocaleString('id-ID');
+
+        // TAMPILKAN AREA STRUK
+        const receipt = document.getElementById('receipt-print');
+        receipt.style.display = 'block';
+
+        // Jeda untuk render, print, lalu reload
+        setTimeout(() => {
+            window.print();
+            location.reload();
+        }, 800);
+    } else {
+        location.reload();
+    }
+}
+
+// Fungsi pendukung lainnya (tetap sama)
+function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; document.getElementById('modal-icehot').style.display = 'flex'; }
+function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
+function updateQty(v) { currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
+function selectType(t) { selectedType = t; }
+function confirmAdd() { cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
 function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
 function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
 function confirmSuccess(m) { selectedMethod = m; document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'none'; document.getElementById('modal-success').style.display = 'flex'; }
-
-function finalize(p) {
-    if(p) {
-        const name = document.getElementById('customer-name-mob').value || document.getElementById('customer-name').value;
-        document.getElementById('p-customer').innerText = "NAMA: " + name.toUpperCase();
-        document.getElementById('p-items').innerHTML = cart.map(i => `<div>${i.qty}x ${i.n} - ${i.qty*8000}</div>`).join('');
-        document.getElementById('receipt-print').style.display = 'block';
-        setTimeout(() => { window.print(); location.reload(); }, 500);
-    } else { location.reload(); }
-}
-
 function openMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'flex'; }
 function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
 function filter(k) { render(k); }
