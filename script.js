@@ -58,7 +58,7 @@ function updateCart() {
 
     const html = cart.map((i, idx) => {
         total += i.qty * 8000;
-        totalQty += i.qty; // Menghitung total gelas (item)
+        totalQty += i.qty;
         return `
         <div class="bg-white p-2 border border-[#3d1c02] rounded-xl text-xs flex justify-between items-center animate-pop mb-2">
             <div class="flex items-center gap-3">
@@ -75,14 +75,35 @@ function updateCart() {
     if(cartCountMob) cartCountMob.innerText = totalQty;
 }
 
+// FUNGSI BAYAR: KUNCI WAJIB ISI NAMA
+function openPay() { 
+    const isMobile = window.innerWidth <= 768;
+    const nameInput = isMobile ? document.getElementById('customer-name-mob') : document.getElementById('customer-name');
+    
+    // Cek apakah keranjang kosong
+    if(cart.length === 0) {
+        alert("Keranjang masih kosong!");
+        return;
+    }
+    
+    // CEK APAKAH NAMA SUDAH DIISI
+    if(!nameInput.value.trim()) {
+        alert("Nama Pelanggan WAJIB diisi!");
+        nameInput.focus();
+        return;
+    }
+    
+    document.getElementById('modal-pay').style.display = 'flex'; 
+}
+
 function finalize(withPrint) {
     if (withPrint) {
         const isMobile = window.innerWidth <= 768;
         const nameInput = isMobile ? document.getElementById('customer-name-mob') : document.getElementById('customer-name');
-        const name = nameInput ? nameInput.value : "PELANGGAN";
+        const name = nameInput.value;
         let totalFinal = 0;
 
-        document.getElementById('p-customer').innerText = "PELANGGAN: " + (name.trim() || "UMUM").toUpperCase();
+        document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
         
         const itemsHTML = cart.map(i => { 
             const sub = i.qty * 8000; totalFinal += sub; 
@@ -112,7 +133,6 @@ function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty 
 function confirmAdd() { playSound('ding'); cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
 function openMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'flex'; }
 function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
-function openPay() { document.getElementById('modal-pay').style.display = 'flex'; }
 function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
 function confirmSuccess(m) { playSound('success'); selectedMethod = m; document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'none'; document.getElementById('modal-success').style.display = 'flex'; }
 function filter(k) { render(k); }
