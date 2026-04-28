@@ -9,24 +9,24 @@
     <title>POS Es Kopi Anteng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.6">
+    <link rel="stylesheet" href="style.css?v=1.7">
 </head>
 <body class="h-screen flex flex-col">
 
     <header class="header-coffee px-6 flex items-center shadow-2xl no-print">
         <img src="images/erasebg-transformed.png" alt="Logo" class="logo-large">
-        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center header-title-container">
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
             <h1 class="header-title font-['Bebas_Neue'] text-4xl md:text-5xl text-[#fdf6ec] tracking-widest uppercase">Es Kopi Anteng</h1>
-            <p class="header-subtitle text-[#c17f4a] text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase">Rasanya Bikin Anteng</p>
+            <p class="text-[#c17f4a] text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase">Rasanya Bikin Anteng</p>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden p-4 gap-4 no-print main-content">
         <main class="flex-1 flex flex-col overflow-hidden">
             <nav class="flex justify-center gap-2 mb-4">
-                <button onclick="playSound('click'); filter('all')" id="t-all" class="tab-on px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">SEMUA</button>
-                <button onclick="playSound('click'); filter('coffee')" id="t-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">COFFEE</button>
-                <button onclick="playSound('click'); filter('non-coffee')" id="t-non-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">NON-COFFEE</button>
+                <button onclick="filter('all')" id="t-all" class="tab-on px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] bg-white uppercase">SEMUA</button>
+                <button onclick="filter('coffee')" id="t-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] bg-white uppercase">COFFEE</button>
+                <button onclick="filter('non-coffee')" id="t-non-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] bg-white uppercase">NON-COFFEE</button>
             </nav>
             <div id="grid-container" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-10"></div>
         </main>
@@ -52,18 +52,72 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase">Total</p>
             <p class="total-display text-2xl font-black text-[#3d1c02]">Rp 0</p>
         </div>
-        <button onclick="openMobileCart()" class="bg-[#3d1c02] text-white px-8 py-3 rounded-xl font-bold btn-bounce flex items-center gap-2">
+        <button onclick="openMobileCart()" class="bg-[#3d1c02] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2">
             🛒 <span id="cart-count-mob">0</span> ITEM
         </button>
     </div>
 
+    <div id="modal-mobile-cart" class="modal-bg no-print">
+        <div class="bg-white w-full max-w-sm rounded-[30px] border-4 border-[#3d1c02] flex flex-col overflow-hidden mx-4">
+            <div class="p-4 bg-[#3d1c02] text-white flex justify-between items-center">
+                <span class="font-bold uppercase text-xs">Daftar Belanja</span>
+                <button onclick="closeMobileCart()" class="text-2xl">&times;</button>
+            </div>
+            <div class="p-4 bg-white border-b">
+                <input type="text" id="customer-name-mob" placeholder="NAMA PELANGGAN..." class="w-full p-3 border-2 border-[#3d1c02] rounded-xl text-sm font-bold uppercase focus:outline-none">
+            </div>
+            <div id="cart-list-mobile" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px] bg-stone-50"></div>
+            <div class="p-6 bg-white border-t-2">
+                <button onclick="closeMobileCart(); openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold uppercase">LANJUT BAYAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-icehot" class="modal-bg no-print">
+        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[380px] text-center mx-4">
+            <h2 id="m-name" class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Varian</h2>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button id="btn-ice" onclick="selectType('ICE')" class="bg-blue-50 border-4 border-[#3d1c02] p-6 rounded-2xl">
+                    <span class="block text-4xl mb-2">🧊</span><span class="font-bold text-blue-700 uppercase">Ice</span>
+                </button>
+                <button id="btn-hot" onclick="selectType('HOT')" class="bg-orange-50 border-4 border-transparent p-6 rounded-2xl">
+                    <span class="block text-4xl mb-2">☕</span><span class="font-bold text-orange-700 uppercase">Hot</span>
+                </button>
+            </div>
+            <div class="flex items-center justify-center gap-6 mb-8 bg-stone-100 p-4 rounded-2xl">
+                <button onclick="updateQty(-1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl">-</button>
+                <span id="m-qty" class="text-3xl font-black">1</span>
+                <button onclick="updateQty(1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl">+</button>
+            </div>
+            <button onclick="confirmAdd()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold uppercase">TAMBAHKAN</button>
+        </div>
+    </div>
+
+    <div id="modal-pay" class="modal-bg no-print">
+        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[400px] text-center mx-4">
+            <h2 class="text-2xl font-black text-[#3d1c02] mb-6 uppercase">Pembayaran</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="confirmSuccess('TUNAI')" class="bg-stone-50 p-6 rounded-2xl border-2 font-bold uppercase">💵 TUNAI</button>
+                <button onclick="handleQRIS()" class="bg-stone-50 p-6 rounded-2xl border-2 font-bold uppercase">📱 QRIS</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-qris" class="modal-bg no-print">
+        <div class="bg-white p-6 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[350px] text-center mx-4">
+            <h2 class="text-xl font-black text-[#3d1c02] mb-4 uppercase">SCAN QRIS</h2>
+            <img src="images/qris-code.jpg" class="w-full rounded-xl border mb-4">
+            <button onclick="confirmSuccess('QRIS')" class="w-full bg-[#3d1c02] text-white py-3 rounded-xl font-bold uppercase">Sudah Bayar</button>
+        </div>
+    </div>
+
     <div id="modal-success" class="modal-bg no-print">
-        <div class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop mx-4">
-            <div class="text-6xl mb-4">✅</div>
-            <h2 class="text-2xl font-black text-[#3d1c02] mb-2 uppercase">Berhasil</h2>
+        <div class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[350px] text-center mx-4">
+            <div class="text-5xl mb-4">✅</div>
+            <h2 class="text-xl font-black text-[#3d1c02] mb-6 uppercase">Berhasil</h2>
             <div class="flex flex-col gap-3">
-                <button onclick="finalize(true)" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce shadow-md uppercase">Cetak Struk</button>
-                <button onclick="finalize(false)" class="w-full bg-stone-100 text-[#3d1c02] py-4 rounded-2xl font-bold border-2 border-[#3d1c02] btn-bounce uppercase text-sm">Selesai</button>
+                <button onclick="finalize(true)" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold uppercase">Cetak Struk</button>
+                <button onclick="finalize(false)" class="w-full bg-stone-100 text-[#3d1c02] py-4 rounded-2xl font-bold border-2 uppercase">Selesai</button>
             </div>
         </div>
     </div>
@@ -81,11 +135,9 @@
         <div id="p-total" style="font-weight:bold; font-size: 14px;"></div>
         <p id="p-method" style="font-size:10px; margin-top: 5px;"></p>
         <p>--------------------------------</p>
-        <center style="margin-top:10px; font-size:10px">
-            <p>TERIMA KASIH!</p>
-        </center>
+        <center style="margin-top:10px; font-size:10px"><p>TERIMA KASIH!</p></center>
     </div>
 
-    <script src="script.js?v=1.6"></script>
+    <script src="script.js?v=1.7"></script>
 </body>
 </html>
