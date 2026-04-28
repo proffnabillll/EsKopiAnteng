@@ -1,5 +1,82 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+/* ── Loading Screen ── */
+(function () {
+    const messages = [
+        "Menyeduh kopi...",
+        "Memanaskan mesin...",
+        "Menyiapkan es batu...",
+        "Hampir siap...",
+    ];
+    let msgIdx = 0;
+    const bar  = document.getElementById('loading-bar');
+    const text = document.getElementById('loading-text');
+    const screen = document.getElementById('loading-screen');
+
+    // Simulasi progress
+    let progress = 0;
+    const interval = setInterval(() => {
+        // Progress naik pelan-pelan, berhenti di 85 sampai semua gambar load
+        const step = progress < 60 ? 4 : progress < 80 ? 1.5 : 0.5;
+        progress = Math.min(progress + step, 85);
+        bar.style.width = progress + '%';
+
+        // Ganti pesan tiap 25%
+        const newIdx = Math.floor(progress / 25);
+        if (newIdx !== msgIdx && newIdx < messages.length) {
+            msgIdx = newIdx;
+            text.style.opacity = '0';
+            setTimeout(() => {
+                text.innerText = messages[msgIdx];
+                text.style.transition = 'opacity 0.4s ease';
+                text.style.opacity = '1';
+            }, 300);
+        }
+    }, 80);
+
+    // Tunggu semua gambar produk selesai load
+    function allImagesLoaded() {
+        const imgs = products.map(p => {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = img.onerror = resolve;
+                img.src = p.f;
+            });
+        });
+        return Promise.all(imgs);
+    }
+
+    // Tunggu font & gambar, lalu tutup loading
+    Promise.all([
+        document.fonts.ready,
+        new Promise(resolve => {
+            // Pastikan products sudah terdefinisi
+            const check = setInterval(() => {
+                if (typeof products !== 'undefined') {
+                    clearInterval(check);
+                    allImagesLoaded().then(resolve);
+                }
+            }, 50);
+        })
+    ]).then(() => {
+        clearInterval(interval);
+        // Selesaikan progress ke 100%
+        bar.style.transition = 'width 0.5s ease';
+        bar.style.width = '100%';
+        text.style.opacity = '0';
+        setTimeout(() => {
+            text.innerText = 'Siap!';
+            text.style.opacity = '1';
+        }, 200);
+        // Fade out loading screen
+        setTimeout(() => {
+            screen.style.opacity = '0';
+            setTimeout(() => { screen.style.display = 'none'; }, 520);
+        }, 600);
+    });
+})();
+
+
 async function playSound(t) {
     if (audioCtx.state === 'suspended') await audioCtx.resume();
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
