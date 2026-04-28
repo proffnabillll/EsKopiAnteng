@@ -87,19 +87,19 @@ async function playSound(t) {
 }
 
 const products = [
-    { id: 1, n: 'Americano', k: 'coffee', f: 'images/Americano.jpg' },
-    { id: 2, n: 'Cappuccino', k: 'coffee', f: 'images/Cappucino.jpg' },
-    { id: 3, n: 'Macchiato', k: 'coffee', f: 'images/Macchiato.jpg' },
-    { id: 4, n: 'Hazelnut Coffee', k: 'coffee', f: 'images/Hazelnut.jpg' },
-    { id: 5, n: 'Taro Coffee', k: 'coffee', f: 'images/Taro.jpg' },
-    { id: 6, n: 'Avocado Coffee', k: 'coffee', f: 'images/Avocado.jpg' },
-    { id: 7, n: 'Chocomilo Coffee', k: 'coffee', f: 'images/Chocomilo.jpg' },
-    { id: 8, n: 'Matcha', k: 'non-coffee', f: 'images/Matcha.jpg' },
-    { id: 9,  n: 'Vanilla Coffee',    k: 'coffee',     f: 'images/Vanilla.jpg' },
-    { id: 10, n: 'Strawberry',        k: 'non-coffee', f: 'images/Strawberry.jpg' },
-    { id: 11, n: 'Caramel Coffee',    k: 'coffee',     f: 'images/Caramel.jpg' },
-    { id: 12, n: 'Kopi Gula Aren',    k: 'coffee',     f: 'images/GulaAren.jpg' },
-    { id: 13, n: 'Coconut Coffee',    k: 'coffee',     f: 'images/Coconut.jpg' }
+    { id: 1,  n: 'Americano',       k: 'coffee',     f: 'images/Americano.jpg' },
+    { id: 2,  n: 'Avocado Coffee',  k: 'coffee',     f: 'images/Avocado.jpg' },
+    { id: 3,  n: 'Cappuccino',      k: 'coffee',     f: 'images/Cappucino.jpg' },
+    { id: 4,  n: 'Caramel Coffee',  k: 'coffee',     f: 'images/Caramel.jpg' },
+    { id: 5,  n: 'Chocomilo Coffee',k: 'coffee',     f: 'images/Chocomilo.jpg' },
+    { id: 6,  n: 'Coconut Coffee',  k: 'coffee',     f: 'images/Coconut.jpg' },
+    { id: 7,  n: 'Hazelnut Coffee', k: 'coffee',     f: 'images/Hazelnut.jpg' },
+    { id: 8,  n: 'Kopi Gula Aren',  k: 'coffee',     f: 'images/GulaAren.jpg' },
+    { id: 9,  n: 'Macchiato',       k: 'coffee',     f: 'images/Macchiato.jpg' },
+    { id: 10, n: 'Matcha',          k: 'non-coffee', f: 'images/Matcha.jpg' },
+    { id: 11, n: 'Strawberry',      k: 'non-coffee', f: 'images/Strawberry.jpg' },
+    { id: 12, n: 'Taro Coffee',     k: 'coffee',     f: 'images/Taro.jpg' },
+    { id: 13, n: 'Vanilla Coffee',  k: 'coffee',     f: 'images/Vanilla.jpg' }
 ];
 
 let cart = [];
