@@ -28,13 +28,19 @@
             <div id="grid-container" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-10"></div>
         </main>
 
-        <aside id="desktop-aside" class="w-80 bg-white rounded-[35px] border-4 border-[#3d1c02] flex-col shadow-xl overflow-hidden">
-            <div class="p-4 bg-[#3d1c02] text-white text-center font-bold tracking-widest text-sm uppercase">Pesanan</div>
-            <div class="p-4 border-b">
+        <aside id="desktop-aside" class="aside-expanded bg-white rounded-[35px] border-4 border-[#3d1c02] flex-col shadow-xl overflow-hidden">
+            <div class="p-4 bg-[#3d1c02] text-white font-bold tracking-widest text-sm uppercase flex items-center justify-between">
+                <span id="aside-title">Pesanan</span>
+                <button onclick="toggleAside()" id="btn-toggle-aside" title="Minimize" class="btn-bounce text-white opacity-80 hover:opacity-100 transition-opacity flex items-center justify-center w-7 h-7 rounded-lg bg-white/20">
+                    <svg id="icon-minimize" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg id="icon-expand" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+            <div class="p-4 border-b aside-hide">
                 <input type="text" id="customer-name" placeholder="NAMA PELANGGAN..." class="w-full p-2 border-2 border-[#3d1c02] rounded-lg text-xs font-bold uppercase focus:outline-none">
             </div>
-            <div id="cart-list-desktop" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"></div>
-            <div class="p-6 bg-[#fdf6ec] border-t-4 border-[#3d1c02]">
+            <div id="cart-list-desktop" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 aside-hide"></div>
+            <div class="p-6 bg-[#fdf6ec] border-t-4 border-[#3d1c02] aside-hide">
                 <div class="flex justify-between items-center mb-4">
                     <span class="font-bold text-gray-500 text-sm uppercase">TOTAL:</span>
                     <span class="total-display text-3xl font-black text-[#3d1c02]">Rp 0</span>
@@ -44,34 +50,50 @@
         </aside>
     </div>
 
-    <div id="mobile-bottom-bar" class="bg-white border-t-4 border-[#3d1c02] p-4 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] flex justify-between items-center">
+    <div id="mobile-bottom-bar" class="bg-white flex justify-between items-center no-print">
         <div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase">Total</p>
-            <p class="total-display text-2xl font-black text-[#3d1c02]">Rp 0</p>
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Pesanan</p>
+            <p class="total-display text-xl font-black text-[#3d1c02]">Rp 0</p>
         </div>
-        <button onclick="playSound('success'); openMobileCart()" class="bg-[#3d1c02] text-white px-8 py-3 rounded-xl font-bold btn-bounce flex items-center gap-2">
-            🛒 <span id="cart-count-mob">0</span> ITEM
+        <button onclick="playSound('success'); openMobileCart()" class="bg-[#3d1c02] text-white px-6 py-3 rounded-2xl font-bold btn-bounce flex items-center gap-2 shadow-lg text-sm">
+            🛒 <span id="cart-count-mob">0</span> Item
         </button>
     </div>
 
-    <div id="modal-mobile-cart" class="modal-bg">
-        <div class="bg-white w-full max-w-sm rounded-[30px] border-4 border-[#3d1c02] flex flex-col overflow-hidden animate-pop">
-            <div class="p-4 bg-[#3d1c02] text-white flex justify-between items-center">
-                <span class="font-bold uppercase text-xs tracking-widest">Daftar Belanja</span>
-                <button onclick="closeMobileCart()" class="text-2xl">&times;</button>
+    <div id="modal-mobile-cart" class="modal-bg" style="align-items: flex-end; padding: 0;">
+        <div data-modal-inner class="bg-white w-full rounded-t-[32px] border-t-4 border-x-4 border-[#3d1c02] flex flex-col overflow-hidden" style="max-height: 88vh;">
+            <!-- Handle bar -->
+            <div class="flex justify-center pt-3 pb-1">
+                <div class="w-10 h-1 rounded-full bg-[#3d1c02] opacity-20"></div>
             </div>
-            <div class="p-4 bg-white border-b">
-                <input type="text" id="customer-name-mob" placeholder="NAMA PELANGGAN..." class="w-full p-3 border-2 border-[#3d1c02] rounded-xl text-sm font-bold uppercase focus:outline-none">
+            <!-- Header -->
+            <div class="px-5 pb-3 pt-1 flex justify-between items-center border-b border-stone-100">
+                <div>
+                    <p class="font-black text-[#3d1c02] text-base uppercase tracking-wide">Pesanan</p>
+                    <p class="text-[10px] text-gray-400 font-medium">Cek dulu sebelum bayar</p>
+                </div>
+                <button onclick="closeMobileCart()" class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-gray-500 font-bold text-lg btn-bounce">&times;</button>
             </div>
-            <div id="cart-list-mobile" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px] bg-stone-50"></div>
-            <div class="p-6 bg-white border-t-2">
-                <button onclick="closeMobileCart(); openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold btn-bounce shadow-lg uppercase">LANJUT BAYAR</button>
+            <!-- Nama pelanggan -->
+            <div class="px-5 py-3 bg-[#fdf6ec] border-b border-stone-100">
+                <label class="text-[9px] font-bold text-[#c17f4a] uppercase tracking-widest block mb-1">Nama Pelanggan</label>
+                <input type="text" id="customer-name-mob" placeholder="Tulis nama di sini..." class="w-full p-2.5 border-2 border-[#3d1c02] rounded-xl text-sm font-bold text-[#3d1c02] bg-white focus:outline-none placeholder:font-normal placeholder:text-gray-300 placeholder:text-xs placeholder:normal-case">
+            </div>
+            <!-- Cart list -->
+            <div id="cart-list-mobile" class="flex-1 overflow-y-auto px-5 py-3 space-y-2 bg-stone-50"></div>
+            <!-- Footer total + bayar -->
+            <div class="px-5 py-4 bg-white border-t-2 border-stone-100">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
+                    <span class="total-display text-xl font-black text-[#3d1c02]">Rp 0</span>
+                </div>
+                <button onclick="closeMobileCart(); openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-black btn-bounce shadow-lg text-sm tracking-widest uppercase">Lanjut Bayar →</button>
             </div>
         </div>
     </div>
 
     <div id="modal-icehot" class="modal-bg">
-        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[380px] text-center animate-pop">
+        <div data-modal-inner class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[380px] text-center">
             <h2 id="m-name" class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Varian</h2>
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <button id="btn-ice" onclick="selectType('ICE')" class="bg-blue-50 border-4 border-transparent p-6 rounded-2xl btn-bounce">
@@ -92,7 +114,7 @@
     </div>
 
     <div id="modal-pay" class="modal-bg">
-        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop">
+        <div data-modal-inner class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[400px] text-center">
             <h2 class="text-2xl font-black text-[#3d1c02] mb-4 uppercase tracking-tighter">Pembayaran</h2>
             <div class="mb-6">
                 <label class="flex items-center justify-center gap-2 mb-3 cursor-pointer">
@@ -117,7 +139,7 @@
     </div>
 
     <div id="modal-qris" class="modal-bg">
-        <div class="bg-white p-6 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[350px] text-center animate-pop">
+        <div data-modal-inner class="bg-white p-6 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[350px] text-center">
             <h2 class="text-xl font-black text-[#3d1c02] mb-4 uppercase">SCAN QRIS</h2>
             <div class="bg-white p-4 border-4 border-stone-100 rounded-2xl mb-4">
                 <img src="images/qris-code.jpg" alt="QRIS" class="w-full h-auto">
@@ -127,7 +149,7 @@
     </div>
 
     <div id="modal-success" class="modal-bg">
-        <div class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop">
+        <div data-modal-inner class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[400px] text-center">
             <div class="text-6xl mb-4">✅</div>
             <h2 class="text-2xl font-black text-[#3d1c02] mb-2 uppercase">Berhasil</h2>
             <div class="flex flex-col gap-3">
