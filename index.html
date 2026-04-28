@@ -10,6 +10,38 @@
 </head>
 <body class="h-screen flex flex-col">
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="
+        position: fixed; inset: 0; z-index: 9999;
+        background-color: #3d1c02;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 24px;
+        transition: opacity 0.5s ease;
+    ">
+        <img src="images/erasebg-transformed.png" alt="Logo" style="
+            height: 110px; width: auto;
+            filter: drop-shadow(0 6px 18px rgba(0,0,0,0.4));
+            animation: logoFloat 2s ease-in-out infinite;
+        ">
+        <div style="text-align: center;">
+            <h1 style="font-family: 'Bebas Neue', sans-serif; color: #fdf6ec; font-size: 2.2rem; letter-spacing: 0.18em; margin: 0; line-height:1;">Es Kopi Anteng</h1>
+            <p style="color: #c17f4a; font-size: 9px; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; margin: 4px 0 0;">Rasanya Bikin Anteng</p>
+        </div>
+        <!-- Progress bar -->
+        <div style="width: 160px; height: 3px; background: rgba(255,255,255,0.15); border-radius: 99px; overflow: hidden;">
+            <div id="loading-bar" style="height: 100%; width: 0%; background: #c17f4a; border-radius: 99px; transition: width 0.4s ease;"></div>
+        </div>
+        <p id="loading-text" style="color: rgba(253,246,236,0.5); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; margin: 0;">Menyeduh kopi...</p>
+    </div>
+
+    <style>
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-8px); }
+        }
+    </style>
+
     <header class="header-coffee px-6 flex items-center shadow-2xl no-print">
         <img src="images/erasebg-transformed.png" alt="Logo" class="logo-large">
         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
