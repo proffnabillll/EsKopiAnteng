@@ -31,7 +31,13 @@
         <aside id="desktop-aside" class="w-80 bg-white rounded-[35px] border-4 border-[#3d1c02] flex-col shadow-xl overflow-hidden">
             <div class="p-4 bg-[#3d1c02] text-white text-center font-bold tracking-widest text-sm uppercase">Pesanan</div>
             <div class="p-4 border-b">
-                <input type="text" id="customer-name" placeholder="NAMA PELANGGAN..." class="w-full p-2 border-2 border-[#3d1c02] rounded-lg text-xs font-bold uppercase focus:outline-none">
+               <input type="text" id="customer-name" placeholder="NAMA PELANGGAN..." 
+       autocomplete="off" 
+       class="w-full p-2 border-2 border-[#3d1c02] rounded-lg text-xs font-bold uppercase focus:outline-none">
+
+<input type="text" id="customer-name-mob" placeholder="NAMA PELANGGAN..." 
+       autocomplete="off" 
+       class="w-full p-3 border-2 border-[#3d1c02] rounded-xl text-sm font-bold uppercase focus:outline-none">
             </div>
             <div id="cart-list-desktop" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"></div>
             <div class="p-6 bg-[#fdf6ec] border-t-4 border-[#3d1c02]">
