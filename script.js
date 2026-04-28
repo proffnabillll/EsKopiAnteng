@@ -17,7 +17,12 @@ const products = [
     { id: 5, n: 'Taro Coffee', k: 'coffee', f: 'images/Taro.jpg' },
     { id: 6, n: 'Avocado Coffee', k: 'coffee', f: 'images/Avocado.jpg' },
     { id: 7, n: 'Chocomilo Coffee', k: 'coffee', f: 'images/Chocomilo.jpg' },
-    { id: 8, n: 'Matcha', k: 'non-coffee', f: 'images/Matcha.jpg' }
+    { id: 8, n: 'Matcha', k: 'non-coffee', f: 'images/Matcha.jpg' },
+    { id: 9,  n: 'Vanilla Coffee',    k: 'coffee',     f: 'images/Vanilla.jpg' },
+    { id: 10, n: 'Strawberry',        k: 'non-coffee', f: 'images/Strawberry.jpg' },
+    { id: 11, n: 'Caramel Coffee',    k: 'coffee',     f: 'images/Caramel.jpg' },
+    { id: 12, n: 'Kopi Gula Aren',    k: 'coffee',     f: 'images/GulaAren.jpg' },
+    { id: 13, n: 'Coconut Coffee',    k: 'coffee',     f: 'images/Coconut.jpg' }
 ];
 
 let cart = [];
