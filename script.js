@@ -27,6 +27,41 @@ let currentQty = 1;
 let splitCount = 1;
 let selectedMethod = "";
 
+/* ── Smooth Modal Helpers ── */
+function showModal(id) {
+    const modal = document.getElementById(id);
+    modal.style.display = 'flex';
+    modal.style.opacity = '0';
+    modal.style.transition = 'opacity 0.28s ease';
+    const inner = modal.querySelector('[data-modal-inner]');
+    if (inner) {
+        inner.style.transform = 'scale(0.95) translateY(10px)';
+        inner.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    }
+    void modal.offsetWidth;
+    modal.style.opacity = '1';
+    if (inner) {
+        setTimeout(() => { inner.style.transform = 'scale(1) translateY(0)'; }, 10);
+    }
+}
+
+function hideModal(id) {
+    const modal = document.getElementById(id);
+    const inner = modal.querySelector('[data-modal-inner]');
+    modal.style.opacity = '0';
+    modal.style.transition = 'opacity 0.22s ease';
+    if (inner) {
+        inner.style.transform = 'scale(0.97) translateY(6px)';
+        inner.style.transition = 'transform 0.22s ease';
+    }
+    setTimeout(() => {
+        modal.style.display = 'none';
+        modal.style.opacity = '';
+        modal.style.transition = '';
+        if (inner) { inner.style.transform = ''; inner.style.transition = ''; }
+    }, 220);
+}
+
 function render(f = 'all') {
     const container = document.getElementById('grid-container');
     container.innerHTML = '';
@@ -36,7 +71,7 @@ function render(f = 'all') {
     const list = f === 'all' ? products : products.filter(p => p.k === f);
     list.forEach((p, idx) => {
         container.innerHTML += `
-            <div class="bg-white p-3 rounded-2xl border-2 border-[#3d1c02] shadow-sm flex flex-col animate-pop relative" style="animation-delay: ${idx*0.05}s">
+            <div class="bg-white p-3 rounded-2xl border-2 border-[#3d1c02] shadow-sm flex flex-col animate-pop relative" style="animation-delay: ${idx * 0.06}s; opacity:0; animation-fill-mode: forwards;">
                 <div class="photo-box cursor-pointer" onclick="openModal(${p.id})">
                     <img src="${p.f}">
                 </div>
@@ -49,124 +84,167 @@ function render(f = 'all') {
     });
 }
 
-function openModal(id) { 
-    activeItem = products.find(p => p.id === id); 
-    document.getElementById('m-name').innerText = activeItem.n; 
-    currentQty = 1; document.getElementById('m-qty').innerText = currentQty; 
+function openModal(id) {
+    activeItem = products.find(p => p.id === id);
+    document.getElementById('m-name').innerText = activeItem.n;
+    currentQty = 1; document.getElementById('m-qty').innerText = currentQty;
     selectedType = "ICE";
     document.getElementById('btn-ice').style.borderColor = '#3d1c02';
     document.getElementById('btn-hot').style.borderColor = 'transparent';
-    document.getElementById('modal-icehot').style.display = 'flex'; 
+    showModal('modal-icehot');
 }
 
-function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
+function closeModal() { hideModal('modal-icehot'); }
 
-function selectType(t) { 
-    playSound('click'); selectedType = t; 
+function selectType(t) {
+    playSound('click'); selectedType = t;
     document.getElementById('btn-ice').style.borderColor = t === 'ICE' ? '#3d1c02' : 'transparent';
     document.getElementById('btn-hot').style.borderColor = t === 'HOT' ? '#3d1c02' : 'transparent';
 }
 
-function updateQty(v) { playSound('click'); currentQty = Math.max(1, currentQty + v); document.getElementById('m-qty').innerText = currentQty; }
+function updateQty(v) {
+    playSound('click');
+    currentQty = Math.max(1, currentQty + v);
+    const el = document.getElementById('m-qty');
+    el.style.transition = 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.1s ease';
+    el.style.transform = v > 0 ? 'translateY(-5px)' : 'translateY(5px)';
+    el.style.opacity = '0';
+    setTimeout(() => {
+        el.innerText = currentQty;
+        el.style.transform = 'translateY(0)';
+        el.style.opacity = '1';
+    }, 120);
+}
 
 function confirmAdd() { playSound('ding'); cart.push({ ...activeItem, type: selectedType, qty: currentQty }); closeModal(); updateCart(); }
 
-function openMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'flex'; }
-function closeMobileCart() { document.getElementById('modal-mobile-cart').style.display = 'none'; }
+function openMobileCart() { showModal('modal-mobile-cart'); }
+function closeMobileCart() { hideModal('modal-mobile-cart'); }
 
 function updateCart() {
     const listDesk = document.getElementById('cart-list-desktop');
-    const listMob = document.getElementById('cart-list-mobile');
+    const listMob  = document.getElementById('cart-list-mobile');
     const totalDisplays = document.querySelectorAll('.total-display');
     let total = 0;
+
     const cartHTML = cart.map((item, index) => {
         total += item.qty * 8000;
-        return `<div class="bg-white p-2 border border-[#3d1c02] rounded-xl text-xs flex justify-between items-center animate-pop"><div class="flex items-center gap-3"><img src="${item.f}" class="w-10 h-10 object-cover rounded-lg border"><div><b class="uppercase">${item.qty}x ${item.n}</b><br><span class="uppercase text-[9px]">${item.type}</span></div></div><button onclick="cart.splice(${index},1); updateCart();" class="text-red-500 font-bold text-xl ml-2">&times;</button></div>`;
+        return `<div class="cart-item-anim bg-white p-2 border border-[#3d1c02] rounded-xl text-xs flex justify-between items-center" style="animation-delay:${index * 0.05}s; opacity:0; animation-fill-mode:forwards;">
+            <div class="flex items-center gap-3">
+                <img src="${item.f}" class="w-10 h-10 object-cover rounded-lg border">
+                <div><b class="uppercase">${item.qty}x ${item.n}</b><br><span class="uppercase text-[9px]">${item.type}</span></div>
+            </div>
+            <button onclick="removeCartItem(${index})" class="text-red-400 hover:text-red-600 font-bold text-xl ml-2 transition-colors duration-200">&times;</button>
+        </div>`;
     }).join('');
-    
+
     listDesk.innerHTML = cart.length ? cartHTML : '<p class="text-center text-gray-400 mt-10 text-xs italic">Kosong</p>';
-    listMob.innerHTML = cart.length ? cartHTML : '<p class="text-center text-gray-400 py-10 italic text-xs">Kosong</p>';
-    totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
+    listMob.innerHTML  = cart.length ? cartHTML : '<p class="text-center text-gray-400 py-10 italic text-xs">Kosong</p>';
+
+    // Animasi total
+    totalDisplays.forEach(el => {
+        el.style.transition = 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        el.style.transform = 'scale(1.1)';
+        el.innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+    });
+
     document.getElementById('cart-count-mob').innerText = cart.length;
 }
 
-function openPay() { 
+function removeCartItem(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function openPay() {
     const isMobile = window.innerWidth <= 768;
     const nameInput = isMobile ? document.getElementById('customer-name-mob') : document.getElementById('customer-name');
-    if(cart.length === 0) return alert("Keranjang kosong!");
-    if(!nameInput.value.trim()) return alert("Isi nama pelanggan!");
+    if (cart.length === 0) return alert("Keranjang kosong!");
+    if (!nameInput.value.trim()) return alert("Isi nama pelanggan!");
     document.getElementById('enable-split').checked = false;
     document.getElementById('split-section').style.display = 'none';
     splitCount = 1; updateSplit(0);
-    document.getElementById('modal-pay').style.display = 'flex'; 
+    showModal('modal-pay');
 }
 
 function toggleSplit() {
     const isEnabled = document.getElementById('enable-split').checked;
-    document.getElementById('split-section').style.display = isEnabled ? 'block' : 'none';
-    if(!isEnabled) { splitCount = 1; updateSplit(0); }
+    const section = document.getElementById('split-section');
+    if (isEnabled) {
+        section.style.display = 'block';
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(-8px)';
+        section.style.transition = 'opacity 0.28s ease, transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        setTimeout(() => { section.style.opacity = '1'; section.style.transform = 'translateY(0)'; }, 10);
+    } else {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(-8px)';
+        section.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+        setTimeout(() => { section.style.display = 'none'; }, 230);
+        splitCount = 1; updateSplit(0);
+    }
 }
 
 function updateSplit(v) {
     splitCount = Math.max(1, splitCount + v);
     document.getElementById('split-count').innerText = splitCount;
     const total = cart.reduce((a, b) => a + (b.qty * 8000), 0);
-    if(splitCount > 1) {
+    if (splitCount > 1) {
         const perPerson = Math.ceil(total / splitCount);
         document.getElementById('split-info').innerText = `@ Rp ${perPerson.toLocaleString()} / Orang`;
-    } else document.getElementById('split-info').innerText = "";
+    } else {
+        document.getElementById('split-info').innerText = "";
+    }
 }
 
-function handleQRIS() { document.getElementById('modal-pay').style.display = 'none'; document.getElementById('modal-qris').style.display = 'flex'; }
-
-function confirmSuccess(method) { 
-    playSound('success'); selectedMethod = method; 
-    document.getElementById('modal-pay').style.display = 'none'; 
-    document.getElementById('modal-qris').style.display = 'none';
-    document.getElementById('modal-success').style.display = 'flex'; 
+function handleQRIS() {
+    hideModal('modal-pay');
+    setTimeout(() => showModal('modal-qris'), 240);
 }
 
-/**
- * Fungsi Finalize yang Dioptimalkan
- * Memastikan data struk terisi sebelum dicetak.
- */
+function confirmSuccess(method) {
+    playSound('success'); selectedMethod = method;
+    hideModal('modal-pay');
+    hideModal('modal-qris');
+    setTimeout(() => showModal('modal-success'), 240);
+}
+
 function finalize(withPrint) {
     if (withPrint) {
         const isMobile = window.innerWidth <= 768;
         const name = isMobile ? document.getElementById('customer-name-mob').value : document.getElementById('customer-name').value;
         let totalFinal = 0;
 
-        // Isi data pelanggan
         document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
-        
-        // Isi item belanja
-        const itemsHTML = cart.map(i => { 
-            const sub = i.qty * 8000; totalFinal += sub; 
-            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n} (${i.type})</span><span>${sub.toLocaleString()}</span></div>`; 
+        const itemsHTML = cart.map(i => {
+            const sub = i.qty * 8000; totalFinal += sub;
+            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n} (${i.type})</span><span>${sub.toLocaleString()}</span></div>`;
         }).join('');
         document.getElementById('p-items').innerHTML = itemsHTML;
-
-        // Isi total
         document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString()}</span></div>`;
-        
-        // Isi info split bill
-        if(splitCount > 1) {
-            document.getElementById('p-split').innerHTML = `SPLIT BILL (${splitCount} Orang):<br>@ Rp ${Math.ceil(totalFinal/splitCount).toLocaleString()} / Orang`;
+        if (splitCount > 1) {
+            document.getElementById('p-split').innerHTML = `SPLIT BILL (${splitCount} Orang):<br>@ Rp ${Math.ceil(totalFinal / splitCount).toLocaleString()} / Orang`;
         } else {
             document.getElementById('p-split').innerHTML = "";
         }
-
-        // Isi metode & waktu
         const now = new Date();
-        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-
-        // Jeda kecil (100ms) untuk memastikan DOM terupdate sebelum cetak
-        setTimeout(() => {
-            window.print();
-            location.reload();
-        }, 100);
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        setTimeout(() => { window.print(); location.reload(); }, 100);
     } else {
         location.reload();
+    }
+}
+
+function toggleAside() {
+    const aside = document.getElementById('desktop-aside');
+    const isMinimized = aside.classList.contains('aside-minimized');
+    if (isMinimized) {
+        aside.classList.remove('aside-minimized');
+        aside.classList.add('aside-expanded');
+    } else {
+        aside.classList.remove('aside-expanded');
+        aside.classList.add('aside-minimized');
     }
 }
 
