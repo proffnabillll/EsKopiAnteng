@@ -62,13 +62,8 @@ body {
     object-fit: cover; 
 }
 
-#desktop-aside { 
-    display: flex; 
-}
-
-#mobile-bottom-bar { 
-    display: none; 
-}
+#desktop-aside { display: flex; }
+#mobile-bottom-bar { display: none; }
 
 /* Gaya Mobile (Max 768px) */
 @media (max-width: 768px) {
@@ -84,34 +79,20 @@ body {
     }
     
     .header-coffee { height: 75px; }
-    
-    .logo-large { 
-        height: 55px; 
-        left: 10px; 
-        top: 50%;
-        transform: translateY(-50%);
-    }
+    .logo-large { height: 55px; left: 10px; top: 50%; transform: translateY(-50%); }
 
-    /* KUNCI: Biar teks beneran tengah, kita kasih padding kiri seukuran logo */
+    /* Perbaikan Posisi Teks Header Mobile agar Center Slogan */
     .header-title-container {
-        padding-left: 50px; 
-        margin-left: 0 !important; 
+        padding-left: 55px; /* Kompensasi lebar logo agar teks bergeser ke tengah */
         width: 100%;
         text-align: center;
     }
 
-    .header-title { 
-        font-size: 1.5rem !important; 
-        display: block;
-    }
-    
-    .header-subtitle {
-        font-size: 9px !important;
-        display: block;
-        width: 100%;
-    }
+    .header-title { font-size: 1.5rem !important; }
+    .header-subtitle { font-size: 9px !important; }
 
-    .main-content { padding-bottom: 110px; }
+    /* Fix Scroll: Ganjalan bawah agar tidak tertutup bar cokelat */
+    .main-content { padding-bottom: 150px !important; }
 }
 
 .modal-bg { 
@@ -127,7 +108,7 @@ body {
 }
 
 @media print {
-    body * { visibility: hidden; }
-    #receipt-print, #receipt-print * { visibility: visible; }
+    body * { visibility: hidden !important; }
+    #receipt-print, #receipt-print * { visibility: visible !important; }
     #receipt-print { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 5px; }
 }
