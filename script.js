@@ -6,7 +6,7 @@ async function playSound(t) {
     o.connect(g); g.connect(audioCtx.destination);
     if(t==='click'){ o.frequency.setValueAtTime(400, audioCtx.currentTime); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); o.start(); o.stop(audioCtx.currentTime + 0.1); }
     else if(t==='ding'){ o.frequency.setValueAtTime(600, audioCtx.currentTime); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2); o.start(); o.stop(audioCtx.currentTime + 0.2); }
-    else if(t==='success'){ o.frequency.setValueAtTime(523, audioCtx.currentTime); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); o.start(); o.stop(audioCtx.currentTime + 0.5); }
+    else if(t==='success'){ o.frequency.setValueAtTime(523, audioCtx.currentTime); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); o.start(); o.stop(0.5); }
 }
 
 const products = [
@@ -40,7 +40,7 @@ function render(f = 'all') {
             <div class="bg-white p-3 rounded-2xl border-2 border-[#3d1c02] shadow-sm flex flex-col relative animate-pop">
                 <div class="photo-box cursor-pointer" onclick="openModal(${p.id})"><img src="${p.f}"></div>
                 <h3 class="font-bold text-xs mt-2 uppercase truncate text-center">${p.n}</h3>
-                <div class="flex justify-between items-center mt-auto pt-2 min-h-[40px]">
+                <div class="flex justify-between items-center mt-auto pt-2">
                     <span class="text-amber-700 font-black text-sm">8K</span>
                     <button onclick="playSound('click'); openModal(${p.id})" class="bg-[#3d1c02] text-white w-9 h-9 rounded-xl font-bold btn-bounce text-xl">+</button>
                 </div>
@@ -67,8 +67,8 @@ function updateCart() {
         </div>`;
     }).join('');
 
-    if(listDesk) listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
-    if(listMob) listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic">Kosong</p>';
+    if(listDesk) listDesk.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic text-xs">Kosong</p>';
+    if(listMob) listMob.innerHTML = html || '<p class="text-center text-gray-400 mt-5 italic text-xs">Kosong</p>';
     totalDisplays.forEach(el => el.innerText = `Rp ${total.toLocaleString('id-ID')}`);
     if(cartCountMob) cartCountMob.innerText = totalItem;
 }
@@ -88,16 +88,28 @@ function finalize(withPrint) {
         const name = nameInput.value;
         let totalFinal = 0;
 
+        // ISI STRUK DENGAN FORMAT SPACE-BETWEEN (RAPI KANAN-KIRI)
         document.getElementById('p-customer').innerText = "PELANGGAN: " + name.toUpperCase();
+        
         const itemsHTML = cart.map(i => { 
             const sub = i.qty * 8000; totalFinal += sub; 
-            return `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n} (${i.type})</span><span>${sub.toLocaleString('id-ID')}</span></div>`; 
+            return `<div style="display:flex; justify-content:space-between; margin-bottom: 2px;">
+                        <span>${i.qty}x ${i.n} (${i.type})</span>
+                        <span>${sub.toLocaleString('id-ID')}</span>
+                    </div>`; 
         }).join('');
         document.getElementById('p-items').innerHTML = itemsHTML;
-        document.getElementById('p-total').innerHTML = `<div style="display:flex; justify-content:space-between"><span>TOTAL</span><span>Rp ${totalFinal.toLocaleString('id-ID')}</span></div>`;
+
+        document.getElementById('p-total').innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-weight:bold; border-top: 1px dashed #000; padding-top: 5px;">
+                <span>TOTAL</span>
+                <span>Rp ${totalFinal.toLocaleString('id-ID')}</span>
+            </div>`;
 
         const skrg = new Date();
-        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + skrg.toLocaleDateString('id-ID') + " " + skrg.getHours().toString().padStart(2,'0') + ":" + skrg.getMinutes().toString().padStart(2,'0');
+        const jam = skrg.getHours().toString().padStart(2, '0');
+        const menit = skrg.getMinutes().toString().padStart(2, '0');
+        document.getElementById('p-method').innerText = "Metode: " + selectedMethod + " | " + skrg.toLocaleDateString('id-ID') + " " + jam + ":" + menit;
 
         const receipt = document.getElementById('receipt-print');
         receipt.style.display = 'block';
@@ -106,6 +118,7 @@ function finalize(withPrint) {
     } else { location.reload(); }
 }
 
+// Fungsi Modal & Filter Tetap Sama
 function openModal(id) { activeItem = products.find(p => p.id === id); document.getElementById('m-name').innerText = activeItem.n; currentQty = 1; document.getElementById('m-qty').innerText = currentQty; selectedType = "ICE"; document.getElementById('modal-icehot').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal-icehot').style.display = 'none'; }
 function selectType(t) { playSound('click'); selectedType = t; document.getElementById('btn-ice').style.borderColor = t==='ICE'?'#3d1c02':'transparent'; document.getElementById('btn-hot').style.borderColor = t==='HOT'?'#3d1c02':'transparent'; }
