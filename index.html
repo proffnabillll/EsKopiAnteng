@@ -9,7 +9,7 @@
     <title>POS Es Kopi Anteng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body class="h-screen flex flex-col">
 
@@ -42,7 +42,7 @@
                     <span class="font-bold text-gray-500 text-sm uppercase">TOTAL:</span>
                     <span class="total-display text-3xl font-black text-[#3d1c02]">Rp 0</span>
                 </div>
-                <button onclick="playSound('success'); openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-xl font-bold text-lg btn-bounce shadow-lg uppercase">BAYAR</button>
+                <button onclick="openPay()" class="w-full bg-[#3d1c02] text-white py-4 rounded-xl font-bold text-lg btn-bounce shadow-lg uppercase">BAYAR</button>
             </div>
         </aside>
     </div>
@@ -52,7 +52,7 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase">Total</p>
             <p class="total-display text-2xl font-black text-[#3d1c02]">Rp 0</p>
         </div>
-        <button onclick="playSound('success'); openMobileCart()" class="bg-[#3d1c02] text-white px-8 py-3 rounded-xl font-bold btn-bounce flex items-center gap-2">
+        <button onclick="openMobileCart()" class="bg-[#3d1c02] text-white px-8 py-3 rounded-xl font-bold btn-bounce flex items-center gap-2">
             🛒 <span id="cart-count-mob">0</span> ITEM
         </button>
     </div>
@@ -73,58 +73,10 @@
         </div>
     </div>
 
-    <div id="modal-icehot" class="modal-bg no-print">
-        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[380px] text-center animate-pop mx-4">
-            <h2 id="m-name" class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Varian</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <button id="btn-ice" onclick="selectType('ICE')" class="bg-blue-50 border-4 border-[#3d1c02] p-6 rounded-2xl btn-bounce">
-                    <span class="block text-4xl mb-2">🧊</span><span class="font-bold text-blue-700 text-xl uppercase">Ice</span>
-                </button>
-                <button id="btn-hot" onclick="selectType('HOT')" class="bg-orange-50 border-4 border-transparent p-6 rounded-2xl btn-bounce">
-                    <span class="block text-4xl mb-2">☕</span><span class="font-bold text-orange-700 text-xl uppercase">Hot</span>
-                </button>
-            </div>
-            <div class="flex items-center justify-center gap-6 mb-8 bg-stone-100 p-4 rounded-2xl">
-                <button onclick="updateQty(-1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">-</button>
-                <span id="m-qty" class="text-3xl font-black text-[#3d1c02]">1</span>
-                <button onclick="updateQty(1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">+</button>
-            </div>
-            <button onclick="confirmAdd()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce uppercase shadow-lg">Masukkan Pesanan</button>
-            <button onclick="closeModal()" class="mt-4 text-gray-400 underline text-sm uppercase font-bold">Batal</button>
-        </div>
-    </div>
-
-    <div id="modal-pay" class="modal-bg no-print">
-        <div class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop mx-4">
-            <h2 class="text-2xl font-black text-[#3d1c02] mb-4 uppercase">Pembayaran</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="confirmSuccess('TUNAI')" class="bg-stone-50 p-6 rounded-2xl border-2 border-stone-200 font-bold btn-bounce uppercase text-sm">Tunai</button>
-                <button onclick="handleQRIS()" class="bg-stone-50 p-6 rounded-2xl border-2 border-stone-200 font-bold btn-bounce uppercase text-sm">QRIS</button>
-            </div>
-            <button onclick="document.getElementById('modal-pay').style.display='none'" class="mt-6 text-gray-400 text-sm font-bold uppercase">Kembali</button>
-        </div>
-    </div>
-
-    <div id="modal-qris" class="modal-bg no-print">
-        <div class="bg-white p-6 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[350px] text-center animate-pop mx-4">
-            <h2 class="text-xl font-black text-[#3d1c02] mb-4 uppercase">SCAN QRIS</h2>
-            <div class="bg-white p-4 border-4 border-stone-100 rounded-2xl mb-4">
-                <img src="images/qris-code.jpg" alt="QRIS" class="w-full h-auto">
-            </div>
-            <button onclick="confirmSuccess('QRIS')" class="w-full bg-[#3d1c02] text-white py-3 rounded-xl font-bold uppercase btn-bounce">Sudah Bayar</button>
-        </div>
-    </div>
-
-    <div id="modal-success" class="modal-bg no-print">
-        <div class="bg-white p-8 rounded-[40px] border-[8px] border-[#3d1c02] w-full max-w-[400px] text-center animate-pop mx-4">
-            <div class="text-6xl mb-4">✅</div>
-            <h2 class="text-2xl font-black text-[#3d1c02] mb-2 uppercase">Berhasil</h2>
-            <div class="flex flex-col gap-3">
-                <button onclick="finalize(true)" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce shadow-md uppercase">Cetak Struk</button>
-                <button onclick="finalize(false)" class="w-full bg-stone-100 text-[#3d1c02] py-4 rounded-2xl font-bold border-2 border-[#3d1c02] btn-bounce uppercase text-sm">Selesai</button>
-            </div>
-        </div>
-    </div>
+    <div id="modal-icehot" class="modal-bg no-print">...</div>
+    <div id="modal-pay" class="modal-bg no-print">...</div>
+    <div id="modal-qris" class="modal-bg no-print">...</div>
+    <div id="modal-success" class="modal-bg no-print">...</div>
 
     <div id="receipt-print" style="font-family: monospace; color: black; display: none; width: 100%; padding: 10px;">
         <center>
@@ -142,6 +94,6 @@
         <center style="margin-top:10px; font-size:10px"><p>TERIMA KASIH!</p></center>
     </div>
 
-    <script src="script.js?v=1.1"></script>
+    <script src="script.js?v=1.2"></script>
 </body>
 </html>
