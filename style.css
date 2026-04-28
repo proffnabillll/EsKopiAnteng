@@ -28,19 +28,91 @@ body {
     filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)); 
 }
 
-/* Animasi */
-@keyframes popIn { 
-    from { opacity: 0; transform: scale(0.9); } 
-    to { opacity: 1; transform: scale(1); } 
+/* ── Animasi Smooth & Fluid ── */
+
+/* Kartu produk: fade + slide up halus */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-pop { 
-    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+/* Modal: fade + scale dari 95% */
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0); }
 }
 
-.btn-bounce:active { 
-    transform: scale(0.9); 
-    transition: 0.1s; 
+/* Cart item: slide in dari kanan */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Overlay modal fade */
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Kartu produk */
+.animate-pop {
+    animation: fadeSlideUp 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Cart item */
+.cart-item-anim {
+    animation: slideInRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Modal konten */
+.modal-content-anim {
+    animation: modalIn 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Overlay */
+.modal-overlay-anim {
+    animation: overlayFadeIn 0.28s ease both;
+}
+
+/* Tombol: press effect halus */
+.btn-bounce {
+    transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                background-color 0.18s ease;
+}
+.btn-bounce:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(61,28,2,0.18);
+}
+.btn-bounce:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 6px rgba(61,28,2,0.12);
+}
+
+/* Kartu produk hover */
+#grid-container > div {
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#grid-container > div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(61,28,2,0.15);
+}
+
+/* Foto produk zoom halus saat hover */
+.photo-box img {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.photo-box:hover img {
+    transform: scale(1.06);
+}
+
+/* Tab filter */
+nav button {
+    transition: background-color 0.22s ease, color 0.22s ease, transform 0.18s ease;
+}
+nav button:active {
+    transform: scale(0.96);
 }
 
 .tab-on { 
@@ -63,9 +135,41 @@ body {
     object-fit: cover; 
 }
 
-#desktop-aside { 
-    display: flex; 
+/* Aside Desktop - Expand/Minimize */
+#desktop-aside {
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
 }
+
+#desktop-aside.aside-expanded {
+    width: 320px;
+}
+
+#desktop-aside.aside-minimized {
+    width: 56px;
+}
+
+#desktop-aside.aside-minimized .aside-hide {
+    display: none !important;
+}
+
+#desktop-aside.aside-minimized #aside-title {
+    display: none;
+}
+
+#desktop-aside.aside-minimized .p-4.bg-\[\#3d1c02\] {
+    justify-content: center;
+}
+
+/* Rotasi ikon saat minimized */
+#desktop-aside.aside-minimized #icon-minimize {
+    display: none;
+}
+#desktop-aside.aside-minimized #icon-expand {
+    display: block !important;
+}
+
+
 
 #mobile-bottom-bar { 
     display: none; 
@@ -75,24 +179,90 @@ body {
 @media (max-width: 768px) {
     body { overflow: auto; }
     #desktop-aside { display: none; }
+
+    /* Bottom bar */
     #mobile-bottom-bar { 
         display: flex; 
         position: fixed; 
         bottom: 0; 
         left: 0; 
         right: 0; 
-        z-index: 80; 
+        z-index: 80;
+        padding: 12px 16px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        background: #fff;
+        border-top: 3px solid #3d1c02;
+        box-shadow: 0 -4px 20px rgba(61,28,2,0.10);
     }
-    
-    .header-coffee { height: 70px; }
+
+    /* Header mobile: compact, teks benar-benar di tengah */
+    .header-coffee {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
     .logo-large { 
-        height: 60px; 
-        left: 10px; 
+        height: 52px;
+        left: 12px;
         top: 50%;
         transform: translateY(-50%);
+        position: absolute;
+        z-index: 60;
     }
-    .header-title { font-size: 1.5rem !important; margin-left: 30px; }
-    .main-content { padding-bottom: 110px; }
+
+    .header-title { 
+        font-size: 1.6rem !important; 
+        letter-spacing: 0.15em !important;
+        line-height: 1;
+        margin-left: 0 !important;
+    }
+
+    .header-coffee p {
+        font-size: 8px !important;
+        letter-spacing: 0.3em !important;
+        margin-top: 2px;
+    }
+
+    /* Grid produk: 2 kolom */
+    #grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding-right: 0;
+    }
+
+    /* Kartu produk mobile */
+    #grid-container > div {
+        padding: 8px;
+        border-radius: 16px;
+    }
+
+    /* Foto produk: rasio persegi di mobile */
+    .photo-box {
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+    }
+
+    /* Nav tab: full width */
+    nav {
+        gap: 6px;
+        padding: 0 2px;
+    }
+    nav button {
+        flex: 1;
+        padding: 8px 4px !important;
+        font-size: 10px !important;
+        border-radius: 10px;
+        letter-spacing: 0.04em;
+    }
+
+    /* Main content beri ruang bottom bar */
+    .main-content { 
+        padding: 10px 10px 90px 10px !important;
+        overflow: auto;
+    }
 }
 
 /* Overlay Modal */
