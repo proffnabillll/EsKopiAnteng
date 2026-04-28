@@ -42,7 +42,7 @@ function render(f = 'all') {
                 </div>
                 <h3 class="font-bold text-xs mt-2 uppercase truncate text-center">${p.n}</h3>
                 <div class="flex justify-between items-center mt-auto pt-2 min-h-[40px]">
-                    <span class="text-amber-700 font-black text-sm text-left">8K</span>
+                    <span class="text-amber-700 font-black text-sm text-left">Rp. 8000</span>
                     <button onclick="playSound('click'); openModal(${p.id})" class="bg-[#3d1c02] text-white w-9 h-9 rounded-xl font-bold btn-bounce text-xl">+</button>
                 </div>
             </div>`;
