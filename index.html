@@ -52,11 +52,20 @@
 
     <div class="flex flex-1 overflow-hidden p-4 gap-4 no-print main-content">
         <main class="flex-1 flex flex-col overflow-hidden">
-            <nav class="flex justify-center gap-2 mb-4">
+            <nav class="flex justify-center gap-2 mb-3">
                 <button onclick="playSound('click'); filter('all')" id="t-all" class="tab-on px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">SEMUA</button>
                 <button onclick="playSound('click'); filter('coffee')" id="t-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">COFFEE</button>
                 <button onclick="playSound('click'); filter('non-coffee')" id="t-non-coffee" class="px-6 md:px-10 py-2 rounded-xl font-bold text-xs border-2 border-[#3d1c02] btn-bounce bg-white uppercase">NON-COFFEE</button>
             </nav>
+            <!-- Search + action buttons -->
+            <div class="flex gap-2 mb-3">
+                <div class="relative flex-1">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+                    <input type="text" id="search-input" placeholder="Cari menu..." oninput="searchMenu()" class="w-full pl-9 pr-4 py-2 border-2 border-[#3d1c02] rounded-xl text-xs font-bold focus:outline-none bg-white uppercase placeholder:normal-case placeholder:font-normal placeholder:text-gray-400">
+                </div>
+                <button onclick="openHistory()" title="Riwayat" class="bg-white border-2 border-[#3d1c02] px-3 py-2 rounded-xl btn-bounce text-sm" title="Riwayat Transaksi">📋</button>
+                <button onclick="openManage()" title="Kelola Menu" class="bg-white border-2 border-[#3d1c02] px-3 py-2 rounded-xl btn-bounce text-sm" title="Kelola Menu">⚙️</button>
+            </div>
             <div id="grid-container" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-10"></div>
         </main>
 
@@ -135,10 +144,13 @@
                     <span class="block text-4xl mb-2">☕</span><span class="font-bold text-orange-700 text-xl uppercase">Hot</span>
                 </button>
             </div>
-            <div class="flex items-center justify-center gap-6 mb-8 bg-stone-100 p-4 rounded-2xl">
+            <div class="flex items-center justify-center gap-6 mb-4 bg-stone-100 p-4 rounded-2xl">
                 <button onclick="updateQty(-1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">-</button>
                 <span id="m-qty" class="text-3xl font-black text-[#3d1c02]">1</span>
                 <button onclick="updateQty(1)" class="bg-[#3d1c02] text-white w-12 h-12 rounded-full font-bold text-2xl btn-bounce">+</button>
+            </div>
+            <div class="mb-6">
+                <input type="text" id="m-notes" placeholder="Catatan (opsional)... misal: less sugar" class="w-full p-3 border-2 border-[#3d1c02] rounded-xl text-xs font-medium focus:outline-none bg-stone-50 placeholder:font-normal placeholder:text-gray-400">
             </div>
             <button onclick="confirmAdd()" class="w-full bg-[#3d1c02] text-white py-4 rounded-2xl font-bold text-lg btn-bounce uppercase shadow-lg">Masukkan Pesanan</button>
             <button onclick="closeModal()" class="mt-4 text-gray-400 underline text-sm uppercase font-bold">Batal</button>
@@ -191,20 +203,91 @@
         </div>
     </div>
 
-    <div id="receipt-print" style="font-family: monospace; color: black; display: none;">
-        <center>
-            <h3 style="margin:0">ES KOPI ANTENG</h3>
-            <p style="margin:0; font-size:10px">Jl. Merpati IV No.22, Menteng Dalam</p>
-            <p>-------------------------------</p>
-            <p id="p-customer" style="font-weight:bold; text-transform:uppercase; margin:5px 0"></p>
-            <p>-------------------------------</p>
-        </center>
-        <div id="p-items" style="margin: 10px 0; font-size:11px"></div>
-        <p>-------------------------------</p>
-        <div id="p-total" style="font-weight:bold; font-size:12px"></div>
-        <div id="p-split" style="font-size:10px; margin: 5px 0; font-style: italic;"></div>
-        <p id="p-method" style="font-size:10px; margin-top:5px"></p>
-        <center style="margin-top:15px; font-size:10px"><p>TERIMA KASIH!</p></center>
+    <div id="receipt-print">
+        <div class="rcp-header">
+            <div class="rcp-store-name">ES KOPI ANTENG</div>
+            <div class="rcp-store-sub">Jl. Merpati IV No.22, Menteng Dalam</div>
+            <div class="rcp-store-sub">Telp: 0858-8401-5667</div>
+        </div>
+        <div class="rcp-div-thick"></div>
+        <div id="p-order-info" class="rcp-meta"></div>
+        <div class="rcp-div-thin"></div>
+        <div id="p-customer" class="rcp-customer"></div>
+        <div class="rcp-div-thin"></div>
+        <div id="p-items"></div>
+        <div class="rcp-div-thin"></div>
+        <div id="p-total"></div>
+        <div id="p-split" class="rcp-split"></div>
+        <div id="p-method" class="rcp-method"></div>
+        <div class="rcp-div-thick"></div>
+        <div class="rcp-footer">
+            <div>** TERIMA KASIH **</div>
+            <div>Selamat menikmati!</div>
+        </div>
+        <div class="rcp-cut"></div>
+    </div>
+
+    <!-- Modal: Riwayat Transaksi -->
+    <div id="modal-history" class="modal-bg">
+        <div data-modal-inner class="bg-white rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[480px] flex flex-col overflow-hidden" style="max-height: 85vh;">
+            <div class="p-5 bg-[#3d1c02] text-white flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h2 class="font-black text-lg uppercase tracking-widest">Riwayat Transaksi</h2>
+                    <p class="text-[10px] text-[#c17f4a] font-bold uppercase tracking-widest mt-0.5" id="history-date"></p>
+                </div>
+                <button onclick="hideModal('modal-history')" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-xl btn-bounce">&times;</button>
+            </div>
+            <div id="history-list" class="flex-1 overflow-y-auto p-5 space-y-3 bg-stone-50"></div>
+            <div class="p-4 bg-white border-t-2 border-stone-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total Hari Ini</p>
+                    <p id="history-grand-total" class="text-xl font-black text-[#3d1c02]">Rp 0</p>
+                </div>
+                <button onclick="clearHistory()" class="text-xs font-bold text-red-400 uppercase border-2 border-red-200 px-4 py-2 rounded-xl btn-bounce hover:bg-red-50">Hapus Semua</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Manajemen Produk -->
+    <div id="modal-manage" class="modal-bg">
+        <div data-modal-inner class="bg-white rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[500px] flex flex-col overflow-hidden" style="max-height: 90vh;">
+            <div class="p-5 bg-[#3d1c02] text-white flex justify-between items-center flex-shrink-0">
+                <h2 class="font-black text-lg uppercase tracking-widest">Kelola Menu</h2>
+                <button onclick="hideModal('modal-manage')" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-xl btn-bounce">&times;</button>
+            </div>
+            <!-- Form tambah/edit -->
+            <div class="p-5 bg-[#fdf6ec] border-b-2 border-stone-100 flex-shrink-0">
+                <p id="manage-form-title" class="text-[10px] font-black text-[#c17f4a] uppercase tracking-widest mb-3">Tambah Menu Baru</p>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <input type="text" id="manage-name" placeholder="Nama menu..." class="col-span-2 p-2.5 border-2 border-[#3d1c02] rounded-xl text-xs font-bold focus:outline-none uppercase placeholder:normal-case placeholder:font-normal placeholder:text-gray-400">
+                    <select id="manage-cat" class="p-2.5 border-2 border-[#3d1c02] rounded-xl text-xs font-bold focus:outline-none bg-white uppercase">
+                        <option value="coffee">Coffee</option>
+                        <option value="non-coffee">Non-Coffee</option>
+                    </select>
+                    <input type="number" id="manage-price" placeholder="Harga..." class="p-2.5 border-2 border-[#3d1c02] rounded-xl text-xs font-bold focus:outline-none placeholder:font-normal placeholder:text-gray-400">
+                    <input type="text" id="manage-img" placeholder="Path gambar (images/...jpg)" class="col-span-2 p-2.5 border-2 border-[#3d1c02] rounded-xl text-xs font-bold focus:outline-none placeholder:font-normal placeholder:text-gray-400 font-mono">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="saveManageProduct()" class="flex-1 bg-[#3d1c02] text-white py-2.5 rounded-xl font-bold text-xs btn-bounce uppercase">Simpan</button>
+                    <button onclick="resetManageForm()" class="px-4 py-2.5 rounded-xl font-bold text-xs btn-bounce uppercase border-2 border-stone-300 text-gray-500">Reset</button>
+                </div>
+            </div>
+            <!-- List produk -->
+            <div id="manage-list" class="flex-1 overflow-y-auto p-5 space-y-2 bg-stone-50"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Konfirmasi Hapus Item Cart -->
+    <div id="modal-confirm-delete" class="modal-bg">
+        <div data-modal-inner class="bg-white p-8 rounded-[35px] border-[6px] border-[#3d1c02] w-full max-w-[340px] text-center">
+            <div class="text-5xl mb-4">🗑️</div>
+            <h2 class="text-xl font-black text-[#3d1c02] mb-2 uppercase">Hapus Item?</h2>
+            <p id="confirm-delete-name" class="text-sm text-gray-500 font-medium mb-6"></p>
+            <div class="flex gap-3">
+                <button onclick="hideModal('modal-confirm-delete')" class="flex-1 py-3 rounded-2xl font-bold border-2 border-stone-300 text-gray-500 btn-bounce text-sm uppercase">Batal</button>
+                <button onclick="doDeleteCartItem()" class="flex-1 py-3 rounded-2xl font-bold bg-red-500 text-white btn-bounce text-sm uppercase shadow-md">Hapus</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
