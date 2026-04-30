@@ -278,17 +278,144 @@ nav button:active {
     padding: 20px; 
 }
 
-/* Aturan Cetak Struk */
+/* Aturan Cetak Struk - Thermal 58mm */
+#receipt-print { display: none; }
+
 @media print {
-    body * { visibility: hidden; }
-    #receipt-print, #receipt-print * { visibility: visible; }
-    #receipt-print { 
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 58mm; 
-        display: block !important; 
-        padding: 5px; 
+    /* Sembunyikan semua kecuali struk */
+    body * { visibility: hidden !important; }
+    #receipt-print,
+    #receipt-print * { visibility: visible !important; }
+
+    @page {
+        size: 58mm auto;
+        margin: 0;
     }
-    @page { margin: 0; size: auto; }
+
+    html, body {
+        width: 58mm;
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    #receipt-print {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 54mm; /* sedikit margin kiri-kanan */
+        margin: 0 2mm;
+        padding: 4mm 0 2mm;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 8pt;
+        color: #000;
+        line-height: 1.4;
+        background: white;
+    }
+
+    /* Header toko */
+    .rcp-header {
+        text-align: center;
+        margin-bottom: 2mm;
+    }
+    .rcp-store-name {
+        font-size: 11pt;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        margin-bottom: 1mm;
+    }
+    .rcp-store-sub {
+        font-size: 7pt;
+        color: #000;
+    }
+
+    /* Garis pemisah */
+    .rcp-div-thick {
+        border-top: 2px solid #000;
+        margin: 2mm 0;
+    }
+    .rcp-div-thin {
+        border-top: 1px dashed #000;
+        margin: 1.5mm 0;
+    }
+
+    /* Info order (nomor, waktu) */
+    .rcp-meta {
+        font-size: 7.5pt;
+        margin: 1mm 0;
+    }
+    .rcp-meta-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Nama pelanggan */
+    .rcp-customer {
+        font-size: 8pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 1mm 0;
+    }
+
+    /* Item baris */
+    .rcp-item {
+        margin: 1.5mm 0;
+    }
+    .rcp-item-name {
+        font-size: 8pt;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .rcp-item-type {
+        font-size: 6.5pt;
+        color: #333;
+    }
+    .rcp-item-notes {
+        font-size: 6.5pt;
+        font-style: italic;
+        color: #333;
+    }
+    .rcp-item-price {
+        display: flex;
+        justify-content: space-between;
+        font-size: 7.5pt;
+        margin-top: 0.5mm;
+    }
+
+    /* Total */
+    .rcp-total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 9pt;
+        font-weight: 900;
+        margin: 1mm 0;
+    }
+
+    /* Split bill */
+    .rcp-split {
+        font-size: 7pt;
+        font-style: italic;
+        margin: 1mm 0;
+    }
+
+    /* Metode bayar */
+    .rcp-method {
+        font-size: 7.5pt;
+        margin: 1mm 0;
+    }
+
+    /* Footer */
+    .rcp-footer {
+        text-align: center;
+        margin-top: 3mm;
+        font-size: 8pt;
+        font-weight: bold;
+        line-height: 1.6;
+    }
+
+    /* Jarak potong kertas */
+    .rcp-cut {
+        margin-top: 8mm;
+    }
 }
